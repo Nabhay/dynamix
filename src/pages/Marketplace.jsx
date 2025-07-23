@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { ShoppingCart, Plus } from 'lucide-react';
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 const SpotlightCard = ({ children, className = "", style = {} }) => {
   const divRef = useRef(null);
@@ -153,6 +154,7 @@ const setCartToCookie = (cart) => {
 const MarketplacePage = () => {
   const [cart, setCart] = useState(getCartFromCookie());
   const [cartCount, setCartCount] = useState(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
+  const navigate = useNavigate();
 
   const products = [{
       id: 1,
@@ -328,6 +330,7 @@ const MarketplacePage = () => {
               }}
               onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#334155"}
               onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#1e293b"}
+              onClick={() => navigate('/checkout')}
             >
               <ShoppingCart size={20} />
               Cart ({cartCount})

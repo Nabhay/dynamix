@@ -8,7 +8,6 @@ import Marketplace from './pages/Marketplace';
 import Auth from './pages/Auth';
 import FAQ from './pages/FAQ';
 import Checkout from './pages/Checkout';
-import Profile from './pages/Profile';
 import Orders from './pages/Orders';
 
 const navItems = [
@@ -51,7 +50,6 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/orders" element={<Orders />} />
         </Routes>
       </div>

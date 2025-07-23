@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from 'react';
-// Use idb-keyval for IndexedDB (install with npm if needed)
-import { get, set, del, update, keys } from 'idb-keyval';
+// Remove idb-keyval import
+// import { get, set, del, update, keys } from 'idb-keyval';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 // TODO: Sync orders with backend in the future
 
 const ORDERS_KEY = 'orders';
 
 const fetchOrders = async () => {
-  const orders = await get(ORDERS_KEY);
-  return orders || [];
+  try {
+    const user_id = localStorage.getItem('user_id') || (window.Cookies && window.Cookies.get && window.Cookies.get('user_id'));
+    if (!user_id) return [];
+    const res = await fetch(`http://127.0.0.1:5000/api/orders?user_id=${encodeURIComponent(user_id)}`, {
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Failed to fetch orders');
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.orders || []);
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    return [];
+  }
 };
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrders().then(setOrders);
@@ -64,7 +78,13 @@ const Orders = () => {
                   <div style={{ color: '#bbb', fontSize: 13, fontWeight: 500 }}>ORDER #</div>
                   <div style={{ fontWeight: 600, fontSize: 16, color: '#e066a7' }}>{order.orderNumber}</div>
                 </div>
-                <button style={{ background: 'rgba(255, 225, 50, 0.8)', color: '#222', fontWeight: 700, border: 'none', borderRadius: 24, padding: '0.6rem 1.5rem', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
+                <button
+                  style={{ background: 'rgba(255, 225, 50, 0.8)', color: '#222', fontWeight: 700, border: 'none', borderRadius: 24, padding: '0.6rem 1.5rem', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}
+                  onClick={() => {
+                    Cookies.set('cart', JSON.stringify(order.items), { expires: 7 });
+                    navigate('/checkout');
+                  }}
+                >
                   <span role="img" aria-label="repeat">🔄</span> Buy it again
                 </button>
               </div>

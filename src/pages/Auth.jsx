@@ -4,7 +4,7 @@ import { getCountries, getCountryCallingCode, isValidPhoneNumber, parsePhoneNumb
 import Cookies from 'js-cookie';
 
 const loginSteps = ["Email", "Password"];
-const signupSteps = ["Info", "Password", "OTP"];
+const signupSteps = ["Info", "Password"];
 
 // Minimal country name map for demo; in production, use a full country name list
 const countryNames = {"AF":"Afghanistan","AL":"Albania","DZ":"Algeria","AS":"American Samoa","AD":"Andorra","AO":"Angola","AI":"Anguilla","AQ":"Antarctica","AG":"Antigua and Barbuda","AR":"Argentina","AM":"Armenia","AW":"Aruba","AU":"Australia","AT":"Austria","AZ":"Azerbaijan","BS":"Bahamas","BH":"Bahrain","BD":"Bangladesh","BB":"Barbados","BY":"Belarus","BE":"Belgium","BZ":"Belize","BJ":"Benin","BM":"Bermuda","BT":"Bhutan","BO":"Bolivia","BA":"Bosnia and Herzegovina","BW":"Botswana","BR":"Brazil","IO":"British Indian Ocean Territory","BN":"Brunei","BG":"Bulgaria","BF":"Burkina Faso","BI":"Burundi","KH":"Cambodia","CM":"Cameroon","CA":"Canada","CV":"Cape Verde","KY":"Cayman Islands","CF":"Central African Republic","TD":"Chad","CL":"Chile","CN":"China","CX":"Christmas Island","CC":"Cocos (Keeling) Islands","CO":"Colombia","KM":"Comoros","CG":"Congo (Brazzaville)","CD":"Congo (Kinshasa)","CK":"Cook Islands","CR":"Costa Rica","HR":"Croatia","CU":"Cuba","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","DM":"Dominica","DO":"Dominican Republic","EC":"Ecuador","EG":"Egypt","SV":"El Salvador","GQ":"Equatorial Guinea","ER":"Eritrea","EE":"Estonia","SZ":"Eswatini","ET":"Ethiopia","FK":"Falkland Islands","FO":"Faroe Islands","FJ":"Fiji","FI":"Finland","FR":"France","GF":"French Guiana","PF":"French Polynesia","GA":"Gabon","GM":"Gambia","GE":"Georgia","DE":"Germany","GH":"Ghana","GI":"Gibraltar","GR":"Greece","GL":"Greenland","GD":"Grenada","GP":"Guadeloupe","GU":"Guam","GT":"Guatemala","GG":"Guernsey","GN":"Guinea","GW":"Guinea-Bissau","GY":"Guyana","HT":"Haiti","HN":"Honduras","HK":"Hong Kong","HU":"Hungary","IS":"Iceland","IN":"India","ID":"Indonesia","IR":"Iran","IQ":"Iraq","IE":"Ireland","IM":"Isle of Man","IL":"Israel","IT":"Italy","CI":"Ivory Coast","JM":"Jamaica","JP":"Japan","JE":"Jersey","JO":"Jordan","KZ":"Kazakhstan","KE":"Kenya","KI":"Kiribati","KW":"Kuwait","KG":"Kyrgyzstan","LA":"Laos","LV":"Latvia","LB":"Lebanon","LS":"Lesotho","LR":"Liberia","LY":"Libya","LI":"Liechtenstein","LT":"Lithuania","LU":"Luxembourg","MO":"Macau","MG":"Madagascar","MW":"Malawi","MY":"Malaysia","MV":"Maldives","ML":"Mali","MT":"Malta","MH":"Marshall Islands","MQ":"Martinique","MR":"Mauritania","MU":"Mauritius","YT":"Mayotte","MX":"Mexico","FM":"Micronesia","MD":"Moldova","MC":"Monaco","MN":"Mongolia","ME":"Montenegro","MS":"Montserrat","MA":"Morocco","MZ":"Mozambique","MM":"Myanmar","NA":"Namibia","NR":"Nauru","NP":"Nepal","NL":"Netherlands","NC":"New Caledonia","NZ":"New Zealand","NI":"Nicaragua","NE":"Niger","NG":"Nigeria","NU":"Niue","KP":"North Korea","MK":"North Macedonia","NO":"Norway","OM":"Oman","PK":"Pakistan","PW":"Palau","PS":"Palestine","PA":"Panama","PG":"Papua New Guinea","PY":"Paraguay","PE":"Peru","PH":"Philippines","PL":"Poland","PT":"Portugal","PR":"Puerto Rico","QA":"Qatar","RE":"Réunion","RO":"Romania","RU":"Russia","RW":"Rwanda","BL":"Saint Barthélemy","SH":"Saint Helena","KN":"Saint Kitts and Nevis","LC":"Saint Lucia","MF":"Saint Martin","PM":"Saint Pierre and Miquelon","VC":"Saint Vincent and the Grenadines","WS":"Samoa","SM":"San Marino","ST":"Sao Tome and Principe","SA":"Saudi Arabia","SN":"Senegal","RS":"Serbia","SC":"Seychelles","SL":"Sierra Leone","SG":"Singapore","SX":"Sint Maarten","SK":"Slovakia","SI":"Slovenia","SB":"Solomon Islands","SO":"Somalia","ZA":"South Africa","KR":"South Korea","SS":"South Sudan","ES":"Spain","LK":"Sri Lanka","SD":"Sudan","SR":"Suriname","SE":"Sweden","CH":"Switzerland","SY":"Syria","TW":"Taiwan","TJ":"Tajikistan","TZ":"Tanzania","TH":"Thailand","TL":"Timor-Leste","TG":"Togo","TK":"Tokelau","TO":"Tonga","TT":"Trinidad and Tobago","TN":"Tunisia","TR":"Turkey","TM":"Turkmenistan","TC":"Turks and Caicos Islands","TV":"Tuvalu","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom","US":"United States","UY":"Uruguay","UZ":"Uzbekistan","VU":"Vanuatu","VA":"Vatican City","VE":"Venezuela","VN":"Vietnam","VI":"Virgin Islands (U.S.)","EH":"Western Sahara","YE":"Yemen","ZM":"Zambia","ZW":"Zimbabwe"};
@@ -94,12 +94,11 @@ const AuthPage = () => {
           // Store token and user_id
           localStorage.setItem("token", data.token);
           localStorage.setItem("user_id", data.user_id);
-          // Store email and password in cookies
           Cookies.set('email', email, { expires: 7 });
           Cookies.set('password', password, { expires: 7 });
-          // Dispatch custom event for navbar update
+          Cookies.set('user_id', data.user_id, { expires: 7 });
           window.dispatchEvent(new Event('user-logged-in'));
-          alert("Logged in!");
+          window.location.href = '/';
         } catch (err) {
           setError("Network error");
         }
@@ -175,17 +174,15 @@ const AuthPage = () => {
             setError(data.error || "Signup failed");
             return;
           }
-          setActiveStep(2);
+          // Set cookies after signup
+          Cookies.set('email', email, { expires: 7 });
+          Cookies.set('password', password, { expires: 7 });
+          Cookies.set('user_id', data.user_id, { expires: 7 });
+          window.dispatchEvent(new Event('user-logged-in'));
+          window.location.href = '/';
         } catch (err) {
           setError("Network error");
         }
-      } else if (activeStep === 2) {
-        if (!otp) {
-          setError("Please enter the OTP sent to your email.");
-          return;
-        }
-        setError("");
-        alert("Signed up!");
       }
     }
   };
@@ -214,6 +211,7 @@ const AuthPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        paddingTop: "6rem",
         background: `
           radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
           radial-gradient(circle at 85% 15%, rgba(25, 59, 112, 0.7) 0%, transparent 45%),
@@ -742,46 +740,7 @@ const AuthPage = () => {
             {/* Disable Next button until all criteria are met and passwords match */}
           </div>
         )}
-        {mode === "signup" && activeStep === 2 && (
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label
-              htmlFor="otp"
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontWeight: 500,
-                fontSize: "1rem",
-              }}
-            >
-              OTP (sent to your email)
-            </label>
-            <input
-              id="otp"
-              type="text"
-              value={otp}
-              onChange={e => setOtp(e.target.value)}
-              onFocus={() => setFocusedField("otp")}
-              onBlur={() => setFocusedField("")}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "0.5rem",
-                border: "1px solid var(--color-dark)",
-                background:
-                  focusedField === "otp"
-                    ? "#DDDDDD"
-                    : otp
-                    ? "silver"
-                    : "#b0b8b4",
-                color: "#333333",
-                fontSize: "1rem",
-                outline: "none",
-                boxShadow: "0 0 8px 0 var(--shadow-glow)",
-              }}
-              autoComplete="one-time-code"
-            />
-          </div>
-        )}
+        {/* Remove OTP step and related UI */}
         <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem" }}>
           {activeStep > 0 && (
             <button

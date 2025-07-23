@@ -276,26 +276,6 @@ const GooeyNav = ({
                         onMouseDown={e => e.preventDefault()}
                       >
                         <Link
-                          to="/profile"
-                          style={{
-                            color: '#fff',
-                            padding: '0.75rem 1.5rem',
-                            textDecoration: 'none',
-                            fontWeight: 500,
-                            fontSize: '1rem',
-                            fontFamily: '"Inter", sans-serif',
-                            border: 'none',
-                            background: 'none',
-                            textAlign: 'left',
-                            cursor: 'pointer',
-                            borderRadius: 8,
-                            transition: 'background 0.2s',
-                          }}
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          Profile
-                        </Link>
-                        <Link
                           to="/orders"
                           style={{
                             color: '#fff',
@@ -315,6 +295,33 @@ const GooeyNav = ({
                         >
                           Orders
                         </Link>
+                        <button
+                          style={{
+                            color: '#fff',
+                            padding: '0.75rem 1.5rem',
+                            textAlign: 'left',
+                            fontWeight: 500,
+                            fontSize: '1rem',
+                            fontFamily: '"Inter", sans-serif',
+                            border: 'none',
+                            background: 'none',
+                            cursor: 'pointer',
+                            borderRadius: 8,
+                            transition: 'background 0.2s',
+                          }}
+                          onClick={() => {
+                            Cookies.remove('email');
+                            Cookies.remove('password');
+                            Cookies.remove('user_id');
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user_id');
+                            setIsLoggedIn(false);
+                            setUserMenuOpen(false);
+                            window.dispatchEvent(new Event('user-logged-in'));
+                          }}
+                        >
+                          Sign Out
+                        </button>
                       </div>
                     )}
                   </div>
@@ -435,26 +442,6 @@ const GooeyNav = ({
                       onMouseDown={e => e.preventDefault()}
                     >
                       <Link
-                        to="/profile"
-                        style={{
-                          color: '#fff',
-                          padding: '0.75rem 1.5rem',
-                          textDecoration: 'none',
-                          fontWeight: 500,
-                          fontSize: '1rem',
-                          fontFamily: '"Inter", sans-serif',
-                          border: 'none',
-                          background: 'none',
-                          textAlign: 'left',
-                          cursor: 'pointer',
-                          borderRadius: 8,
-                          transition: 'background 0.2s',
-                        }}
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Profile
-                      </Link>
-                      <Link
                         to="/orders"
                         style={{
                           color: '#fff',
@@ -474,6 +461,33 @@ const GooeyNav = ({
                       >
                         Orders
                       </Link>
+                      <button
+                        style={{
+                          color: '#fff',
+                          padding: '0.75rem 1.5rem',
+                          textAlign: 'left',
+                          fontWeight: 500,
+                          fontSize: '1rem',
+                          fontFamily: '"Inter", sans-serif',
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          borderRadius: 8,
+                          transition: 'background 0.2s',
+                        }}
+                        onClick={() => {
+                          Cookies.remove('email');
+                          Cookies.remove('password');
+                          Cookies.remove('user_id');
+                          localStorage.removeItem('token');
+                          localStorage.removeItem('user_id');
+                          setIsLoggedIn(false);
+                          setUserMenuOpen(false);
+                          window.dispatchEvent(new Event('user-logged-in'));
+                        }}
+                      >
+                        Sign Out
+                      </button>
                     </div>
                   )}
                 </div>

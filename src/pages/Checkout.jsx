@@ -130,8 +130,11 @@ const Checkout = () => {
   const handlePlaceOrder = async () => {
     // Generate order object
     const now = new Date();
+    // Get user_id from localStorage or cookies
+    const user_id = localStorage.getItem('user_id') || Cookies.get('user_id');
     const order = {
       id: Date.now(),
+      user_id, // include user_id
       orderNumber: Math.floor(Math.random() * 1e12).toString().padStart(12, '0'),
       placedDate: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
       deliveredDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long' }),
@@ -142,17 +145,27 @@ const Checkout = () => {
       items: cart.map(item => ({ ...item, price: item.price })), // ensure price is stored
       status: 'Order Confirmed',
     };
-    // Save to IndexedDB (TODO: sync with backend later)
-    const prevOrders = (await get(ORDERS_KEY)) || [];
-    await set(ORDERS_KEY, [order, ...prevOrders]);
-    // Clear cart
-    Cookies.set('cart', JSON.stringify([]), { expires: 7 });
-    // Navigate to orders page
-    navigate('/orders');
+    // Send to backend
+    try {
+      const res = await fetch('http://127.0.0.1:5000/api/orders/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(order),
+      });
+      if (!res.ok) throw new Error('Failed to place order');
+      // Clear cart
+      Cookies.set('cart', JSON.stringify([]), { expires: 7 });
+      // Navigate to orders page
+      navigate('/orders');
+    } catch (err) {
+      alert('Failed to place order. Please try again.');
+      console.error(err);
+    }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif', paddingTop: '6rem' }}>
       <div style={{ background: 'var(--color-mid, #1e293b)', padding: '2.5rem 2rem', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.18)', minWidth: 340, color: '#fff', maxWidth: 420, width: '100%' }}>
         <h2 style={{ marginBottom: '1.5rem', fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: '2rem', textAlign: 'center' }}>Checkout</h2>
         <Stepper steps={steps} activeStep={activeStep} onStepChange={setActiveStep} />
