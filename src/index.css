@@ -25,8 +25,6 @@ html, body {
   color: var(--text-light);
   min-height: 100vh;
   scroll-behavior: smooth;
-  overflow: hidden;
-  overscroll-behavior: none;
 }
 
 a {
@@ -36,4 +34,27 @@ a {
 
 ul {
   list-style: none;
+}
+
+.main-scroll-content {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  scroll-padding-top: 96px;
+}
+
+/* Optional: Modern custom scrollbar */
+.main-scroll-content::-webkit-scrollbar {
+  width: 12px;
+}
+.main-scroll-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 140, 140, 0.25);
+  border-radius: 8px;
+}
+.main-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-content-none {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
 }
