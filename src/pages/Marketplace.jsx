@@ -161,84 +161,84 @@ const MarketplacePage = () => {
       id: 1,
       name: "Aetherium Ingot",
       price: 12.99,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
+      image: "./src/assets/1.png",
       description: "A solid ingot of superconductive Aetherium, used in high-efficiency power grids."
     },
     {
       id: 2,
       name: "NeuroSteel Rod",
       price: 23.99,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
+      image: "./src/assets/2.png",
       description: "Precision-forged rod of NeuroSteel, ideal for robotic actuators and exoskeletons."
     },
     {
       id: 3,
       name: "Cobaltite Plate",
       price: 33.99,
-      image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop",
+      image: "./src/assets/3.png",
       description: "A high-purity cobaltite plate, essential for battery arrays and energy storage."
     },
     {
       id: 4,
       name: "Iridium Alloy Core",
       price: 89.99,
-      image: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=400&h=300&fit=crop",
+      image: "./src/assets/4.png",
       description: "Dense iridium alloy core, highly resistant to corrosion and used in quantum processors."
     },
     {
       id: 5,
       name: "Titanite Fragment",
       price: 17.49,
-      image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=300&fit=crop",
+      image: "./src/assets/5.png",
       description: "A fragment of titanite, valued for its strength-to-weight ratio in aerospace engineering."
     },
     {
       id: 6,
       name: "Vibranium Bar",
       price: 27.99,
-      image: "https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400&h=300&fit=crop",
+      image: "./src/assets/6.png",
       description: "A solid bar of vibranium, legendary for its energy absorption and vibration dampening."
     },
     {
       id: 7,
       name: "Synaptium Crystal",
       price: 33.99,
-      image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=300&fit=crop",
+      image: "./src/assets/7.png",
       description: "Polished disc of Synaptium alloy, used in AI hardware for rapid neural data transfer."
     },
     {
       id: 8,
       name: "Abyssium Crystal Cluster",
       price: 59.99,
-      image: "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop",
+      image: "./src/assets/8.png",
       description: "A cluster of deep-sea Abyssium crystals, highly conductive for marine energy grids."
     },
     {
       id: 9,
       name: "GeoCore Metal Alloy",
       price: 23.99,
-      image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=300&fit=crop",
+      image: "./src/assets/9.png",
       description: "A dense sphere of GeoCore metal, ideal for seismic sensors and geophysical equipment."
     },
     {
       id: 10,
       name: "NanoSteel Mesh",
       price: 12.99,
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      image: "./src/assets/10.png",
       description: "Flexible mesh of NanoSteel, self-repairing and perfect for advanced construction."
     },
     {
       id: 11,
       name: "Hydronium Alloy Block",
       price: 33.99,
-      image: "https://images.unsplash.com/photo-1609592432032-3a8daa2e937b?w=400&h=300&fit=crop",
+      image: "./src/assets/11.png",
       description: "A solid block of hydronium alloy, used in safe extraction of underwater methane hydrates."
     },
     {
       id: 12,
       name: "EchoTitan Beacon",
       price: 19.99,
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400&h=300&fit=crop",
+      image: "./src/assets/12.png",
       description: "A titanium-based beacon that emits sonar pulses, guiding autonomous subs in the deep sea."
     }
   ];

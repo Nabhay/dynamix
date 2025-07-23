@@ -571,6 +571,25 @@ const MagicBento = ({
                   <div className="card__label">{card.label}</div>
                 </div>
                 <div className="card__content">
+                  {card.image && (
+                    <img
+                      src={card.image.replace('./src/assets/', '/src/assets/')}
+                      alt={card.title}
+                      style={{
+                        width: '300px',
+                        height: '300px',
+                        objectFit: 'contain',
+                        display: 'block',
+                        margin: '0 auto 1em auto',
+                        borderRadius: '18px',
+                        background: 'rgba(0,0,0,0.08)',
+                        boxShadow: '0 4px 24px 0 rgba(0,0,0,0.12)',
+                        transition: 'transform 0.7s cubic-bezier(.4,0,.2,1)',
+                        transform: 'scale(1)',
+                        animation: 'bento-img-scalein 0.7s cubic-bezier(.4,0,.2,1)'
+                      }}
+                    />
+                  )}
                   <h2 className="card__title">{card.title}</h2>
                   <p className="card__description">{card.description}</p>
                 </div>
@@ -706,3 +725,10 @@ const MagicBento = ({
 };
 
 export default MagicBento;
+
+// Add global keyframes for the scale-in animation
+if (typeof window !== 'undefined') {
+  const style = document.createElement('style');
+  style.innerHTML = `@keyframes bento-img-scalein { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }`;
+  document.head.appendChild(style);
+}

@@ -112,7 +112,7 @@ function HomePage() {
             }}
           >
         <ModelViewer
-          url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
+          url="src/assets/dynamix submarine.glb"
           width={550}
           height={550}
         />
