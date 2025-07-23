@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Stepper from "../components/Stepper";
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 
@@ -13,24 +13,61 @@ const countryList = getCountries().filter(
   c => countryNames[c]
 );
 
+function getPasswordCriteria(password) {
+  return {
+    length: password.length >= 8,
+    capital: /[A-Z]/.test(password),
+    number: /[0-9]/.test(password),
+    symbol: /[@_-]/.test(password),
+  };
+}
+
+function passwordStrength(password) {
+  const c = getPasswordCriteria(password);
+  return Object.values(c).filter(Boolean).length;
+}
+
+function isValidEmail(email) {
+  // Simple email regex
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 const AuthPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [country, setCountry] = useState("US");
   const [phone, setPhone] = useState(""); // E.164 format
   const [rawPhone, setRawPhone] = useState(""); // User input
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
   const [mode, setMode] = useState("login"); // 'login' or 'signup'
   const steps = mode === "login" ? loginSteps : signupSteps;
+  const [focusedField, setFocusedField] = useState("");
+
+  // Show toast when error changes
+  useEffect(() => {
+    if (error) {
+      setShowToast(true);
+      const timer = setTimeout(() => setShowToast(false), 3500);
+      return () => clearTimeout(timer);
+    } else {
+      setShowToast(false);
+    }
+  }, [error]);
 
   const handleNext = () => {
     if (mode === "login") {
       if (activeStep === 0) {
         if (!email) {
           setError("Please enter your email.");
+          return;
+        }
+        if (!isValidEmail(email)) {
+          setError("Please enter a valid email address.");
           return;
         }
         setError("");
@@ -54,6 +91,10 @@ const AuthPage = () => {
         }
         if (!email) {
           setError("Please enter your email.");
+          return;
+        }
+        if (!isValidEmail(email)) {
+          setError("Please enter a valid email address.");
           return;
         }
         if (!rawPhone) {
@@ -81,9 +122,25 @@ const AuthPage = () => {
           setError("Please enter your password.");
           return;
         }
+        if (!isValidEmail(email)) {
+          setError("Please enter a valid email address.");
+          return;
+        }
+        const criteria = getPasswordCriteria(password);
+        if (!criteria.length || !criteria.capital || !criteria.number || !criteria.symbol) {
+          setError("Password does not meet all strength criteria.");
+          return;
+        }
+        if (!confirmPassword) {
+          setError("Please confirm your password.");
+          return;
+        }
+        if (password !== confirmPassword) {
+          setError("Passwords do not match.");
+          return;
+        }
         setError("");
         setActiveStep(2);
-        setTimeout(() => alert("OTP sent to your email! (simulated)"), 300);
       } else if (activeStep === 2) {
         if (!otp) {
           setError("Please enter the OTP sent to your email.");
@@ -134,7 +191,7 @@ const AuthPage = () => {
           background: "var(--color-mid)",
           padding: "2.5rem 2rem 2rem 2rem",
           borderRadius: "var(--radius-lg)",
-          boxShadow: "var(--shadow-green)",
+          boxShadow: "var(--shadow-glow)",
           minWidth: 340,
           color: "var(--text-light)",
           maxWidth: 360,
@@ -156,19 +213,29 @@ const AuthPage = () => {
           {mode === "login" ? "Login" : "Sign Up"}
         </h2>
         <Stepper steps={steps} activeStep={activeStep} onStepChange={setActiveStep} />
-        {error && (
+        {/* Toast for errors (not shown in Basic Info step) */}
+        {showToast && error && !(mode === 'signup' && activeStep === 0) && (
           <div
             style={{
-              background: "#ef4444",
-              color: "var(--text-light)",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.5rem",
-              marginBottom: "1rem",
-              fontSize: "1rem",
-              textAlign: "center",
+              position: 'fixed',
+              bottom: 32,
+              right: 32,
+              background: '#ef4444',
+              color: 'white',
+              padding: '1rem 1.5rem',
+              borderRadius: '0.75rem',
+              fontSize: '1.1rem',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+              zIndex: 9999,
+              minWidth: 220,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              animation: 'fadeInToast 0.3s',
             }}
           >
-            {error}
+            <span style={{ fontWeight: 700, fontSize: 18 }}>!</span>
+            <span>{error}</span>
           </div>
         )}
         {/* LOGIN FIELDS */}
@@ -190,16 +257,24 @@ const AuthPage = () => {
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            onFocus={() => setFocusedField("email")}
+            onBlur={() => setFocusedField("")}
             style={{
               width: "100%",
               padding: "0.75rem",
               borderRadius: "0.5rem",
               border: "1px solid var(--color-dark)",
-              background: "var(--color-dark)",
-              color: "var(--text-light)",
+              background:
+                focusedField === "email"
+                  ? "#DDDDDD"
+                  : email
+                  ? "silver"
+                  : "#b0b8b4",
+              color: "#333333",
               fontSize: "1rem",
               outline: "none",
               marginBottom: "0.25rem",
+              boxShadow: "0 0 8px 0 var(--shadow-glow)",
             }}
             autoComplete="username"
           />
@@ -223,15 +298,23 @@ const AuthPage = () => {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            onFocus={() => setFocusedField("password")}
+            onBlur={() => setFocusedField("")}
             style={{
               width: "100%",
               padding: "0.75rem",
               borderRadius: "0.5rem",
               border: "1px solid var(--color-dark)",
-              background: "var(--color-dark)",
-              color: "var(--text-light)",
+              background:
+                focusedField === "password"
+                  ? "#DDDDDD"
+                  : password
+                  ? "silver"
+                  : "#b0b8b4",
+              color: "#333333",
               fontSize: "1rem",
               outline: "none",
+              boxShadow: "0 0 8px 0 var(--shadow-glow)",
             }}
             autoComplete="current-password"
           />
@@ -249,6 +332,7 @@ const AuthPage = () => {
                   marginBottom: "0.5rem",
                   fontWeight: 500,
                   fontSize: "1rem",
+                  color: error && error.toLowerCase().includes('name') ? '#ef4444' : undefined,
                 }}
               >
                 Name
@@ -257,17 +341,39 @@ const AuthPage = () => {
                 id="name"
                 type="text"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={e => {
+                  setName(e.target.value);
+                  // Live validation
+                  if (!e.target.value) {
+                    setError("Please enter your name.");
+                  } else if (!email) {
+                    setError("Please enter your email.");
+                  } else if (!isValidEmail(email)) {
+                    setError("Please enter a valid email address.");
+                  } else if (!rawPhone) {
+                    setError("Please enter your phone number.");
+                  } else {
+                    setError("");
+                  }
+                }}
+                onFocus={() => setFocusedField("name")}
+                onBlur={() => setFocusedField("")}
                 style={{
                   width: "100%",
                   padding: "0.75rem",
                   borderRadius: "0.5rem",
-                  border: "1px solid var(--color-dark)",
-                  background: "var(--color-dark)",
-                  color: "var(--text-light)",
+                  border: error && error.toLowerCase().includes('name') ? '2px solid #ef4444' : '1px solid var(--color-dark)',
+                  background:
+                    focusedField === "name"
+                      ? "#DDDDDD"
+                      : name
+                      ? "silver"
+                      : "#b0b8b4",
+                  color: "#333333",
                   fontSize: "1rem",
                   outline: "none",
                   marginBottom: "0.25rem",
+                  boxShadow: "0 0 8px 0 var(--shadow-glow)",
                 }}
                 autoComplete="name"
               />
@@ -281,6 +387,7 @@ const AuthPage = () => {
                   marginBottom: "0.5rem",
                   fontWeight: 500,
                   fontSize: "1rem",
+                  color: error && error.toLowerCase().includes('email') ? '#ef4444' : undefined,
                 }}
               >
                 Email
@@ -289,17 +396,39 @@ const AuthPage = () => {
                 id="signup-email"
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => {
+                  setEmail(e.target.value);
+                  // Live validation
+                  if (!name) {
+                    setError("Please enter your name.");
+                  } else if (!e.target.value) {
+                    setError("Please enter your email.");
+                  } else if (!isValidEmail(e.target.value)) {
+                    setError("Please enter a valid email address.");
+                  } else if (!rawPhone) {
+                    setError("Please enter your phone number.");
+                  } else {
+                    setError("");
+                  }
+                }}
+                onFocus={() => setFocusedField("signup-email")}
+                onBlur={() => setFocusedField("")}
                 style={{
                   width: "100%",
                   padding: "0.75rem",
                   borderRadius: "0.5rem",
-                  border: "1px solid var(--color-dark)",
-                  background: "var(--color-dark)",
-                  color: "var(--text-light)",
+                  border: error && error.toLowerCase().includes('email') ? '2px solid #ef4444' : '1px solid var(--color-dark)',
+                  background:
+                    focusedField === "signup-email"
+                      ? "#DDDDDD"
+                      : email
+                      ? "silver"
+                      : "#b0b8b4",
+                  color: "#333333",
                   fontSize: "1rem",
                   outline: "none",
                   marginBottom: "0.25rem",
+                  boxShadow: "0 0 8px 0 var(--shadow-glow)",
                 }}
                 autoComplete="new-email"
               />
@@ -313,6 +442,7 @@ const AuthPage = () => {
                   marginBottom: "0.5rem",
                   fontWeight: 500,
                   fontSize: "1rem",
+                  color: error && error.toLowerCase().includes('country') ? '#ef4444' : undefined,
                 }}
               >
                 Country
@@ -320,19 +450,41 @@ const AuthPage = () => {
               <select
                 id="country"
                 value={country}
-                onChange={e => setCountry(e.target.value)}
+                onChange={e => {
+                  setCountry(e.target.value);
+                  // Live validation
+                  if (!name) {
+                    setError("Please enter your name.");
+                  } else if (!email) {
+                    setError("Please enter your email.");
+                  } else if (!isValidEmail(email)) {
+                    setError("Please enter a valid email address.");
+                  } else if (!rawPhone) {
+                    setError("Please enter your phone number.");
+                  } else {
+                    setError("");
+                  }
+                }}
+                onFocus={() => setFocusedField("country")}
+                onBlur={() => setFocusedField("")}
                 style={{
                   width: "100%",
                   padding: "0.75rem 0.5rem",
                   borderRadius: "0.5rem",
-                  border: "1px solid var(--color-dark)",
-                  background: "var(--color-dark)",
-                  color: "var(--text-light)",
+                  border: error && error.toLowerCase().includes('country') ? '2px solid #ef4444' : '1px solid var(--color-dark)',
+                  background:
+                    focusedField === "country"
+                      ? "#DDDDDD"
+                      : country
+                      ? "silver"
+                      : "#b0b8b4",
+                  color: "#333333",
                   fontSize: "1rem",
                   outline: "none",
                   marginBottom: "0.5rem",
                   marginRight: 0,
                   appearance: 'none',
+                  boxShadow: "0 0 8px 0 var(--shadow-glow)",
                 }}
               >
                 {countryList.map(c => (
@@ -348,47 +500,80 @@ const AuthPage = () => {
                   marginBottom: "0.5rem",
                   fontWeight: 500,
                   fontSize: "1rem",
+                  color: error && error.toLowerCase().includes('phone') ? '#ef4444' : undefined,
                 }}
               >
                 Phone Number
               </label>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span style={{
-                  background: 'var(--color-dark)',
-                  color: 'var(--text-muted)',
-                  border: '1px solid var(--color-dark)',
-                  borderRight: 'none',
-                  borderRadius: '0.5rem 0 0 0.5rem',
-                  height: 48,
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0 1rem',
-                  fontSize: '1rem',
-                  minWidth: 56,
-                  textAlign: 'center',
-                  userSelect: 'none',
-                  boxSizing: 'border-box',
-                }}>{`+${getCountryCallingCode(country)}`}</span>
+                <span
+                  style={{
+                    background:
+                      focusedField === "phone"
+                        ? "#DDDDDD"
+                        : rawPhone
+                        ? "silver"
+                        : "#b0b8b4",
+                    color: "#333333",
+                    border: error && error.toLowerCase().includes('phone') ? '2px solid #ef4444' : '1px solid var(--color-dark)',
+                    borderRight: 'none',
+                    borderRadius: '0.5rem 0 0 0.5rem',
+                    height: 48,
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 1rem',
+                    fontSize: '1rem',
+                    minWidth: 56,
+                    textAlign: 'center',
+                    userSelect: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  {`+${getCountryCallingCode(country)}`}
+                </span>
                 <input
                   id="phone"
                   type="tel"
                   value={rawPhone}
-                  onChange={e => setRawPhone(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setRawPhone(val);
+                    // Live validation
+                    if (!name) {
+                      setError("Please enter your name.");
+                    } else if (!email) {
+                      setError("Please enter your email.");
+                    } else if (!isValidEmail(email)) {
+                      setError("Please enter a valid email address.");
+                    } else if (!val) {
+                      setError("Please enter your phone number.");
+                    } else {
+                      setError("");
+                    }
+                  }}
+                  onFocus={() => setFocusedField("phone")}
+                  onBlur={() => setFocusedField("")}
                   style={{
                     width: "100%",
                     height: 48,
                     padding: "0 1rem",
                     borderRadius: "0 0.5rem 0.5rem 0",
-                    border: "1px solid var(--color-dark)",
+                    border: error && error.toLowerCase().includes('phone') ? '2px solid #ef4444' : '1px solid var(--color-dark)',
                     borderLeft: 'none',
-                    background: "var(--color-dark)",
-                    color: "var(--text-light)",
+                    background:
+                      focusedField === "phone"
+                        ? "#DDDDDD"
+                        : rawPhone
+                        ? "silver"
+                        : "#b0b8b4",
+                    color: "#333333",
                     fontSize: "1rem",
                     outline: "none",
                     marginBottom: 0,
                     boxSizing: 'border-box',
                     display: 'flex',
                     alignItems: 'center',
+                    boxShadow: "0 0 8px 0 var(--shadow-glow)",
                   }}
                   autoComplete="tel"
                   placeholder={"Phone number"}
@@ -415,18 +600,108 @@ const AuthPage = () => {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              onFocus={() => setFocusedField("signup-password")}
+              onBlur={() => setFocusedField("")}
               style={{
                 width: "100%",
-                padding: "0.75rem",
-                borderRadius: "0.5rem",
+                padding: "0.45rem 0.7rem",
+                borderRadius: "0.4rem",
                 border: "1px solid var(--color-dark)",
-                background: "var(--color-dark)",
-                color: "var(--text-light)",
-                fontSize: "1rem",
+                background:
+                  focusedField === "signup-password"
+                    ? "#DDDDDD"
+                    : password
+                    ? "silver"
+                    : "#b0b8b4",
+                color: "#333333",
+                fontSize: "0.92rem",
                 outline: "none",
+                boxShadow: "0 0 8px 0 var(--shadow-glow)",
               }}
               autoComplete="new-password"
             />
+            {/* Confirm Password field */}
+            <label
+              htmlFor="confirm-password"
+              style={{
+                display: "block",
+                marginTop: "1.25rem",
+                marginBottom: "0.5rem",
+                fontWeight: 500,
+                fontSize: "1rem",
+              }}
+            >
+              Confirm Password
+            </label>
+            <input
+              id="confirm-password"
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              onFocus={() => setFocusedField("confirm-password")}
+              onBlur={() => setFocusedField("")}
+              style={{
+                width: "100%",
+                padding: "0.45rem 0.7rem",
+                borderRadius: "0.4rem",
+                border: "1px solid var(--color-dark)",
+                background:
+                  focusedField === "confirm-password"
+                    ? "#DDDDDD"
+                    : confirmPassword
+                    ? "silver"
+                    : "#b0b8b4",
+                color: "#333333",
+                fontSize: "0.92rem",
+                outline: "none",
+                boxShadow: "0 0 8px 0 var(--shadow-glow)",
+              }}
+              autoComplete="new-password"
+            />
+            {/* Password strength criteria and bar below confirm password */}
+            <ul style={{
+              margin: '1.5rem 0 0 0',
+              padding: 0,
+              listStyle: 'none',
+              fontSize: '0.85rem',
+              color: '#333',
+            }}>
+              {(() => {
+                const c = getPasswordCriteria(password);
+                return [
+                  <li key="length" style={{ color: c.length ? '#00b686' : '#ef4444', marginBottom: 8 }}>
+                    {c.length ? '✓' : '✗'} At least 8 characters
+                  </li>,
+                  <li key="capital" style={{ color: c.capital ? '#00b686' : '#ef4444', marginBottom: 8 }}>
+                    {c.capital ? '✓' : '✗'} Capital letter
+                  </li>,
+                  <li key="number" style={{ color: c.number ? '#00b686' : '#ef4444', marginBottom: 8 }}>
+                    {c.number ? '✓' : '✗'} Number
+                  </li>,
+                  <li key="symbol" style={{ color: c.symbol ? '#00b686' : '#ef4444', marginBottom: 8 }}>
+                    {c.symbol ? '✓' : '✗'} Symbol (@, _, -)
+                  </li>,
+                ];
+              })()}
+            </ul>
+            <div style={{ marginTop: 6, height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{
+                width: `${(passwordStrength(password) / 4) * 100}%`,
+                height: 8,
+                background:
+                  passwordStrength(password) === 0
+                    ? '#ef4444'
+                  : passwordStrength(password) === 1
+                    ? 'linear-gradient(90deg, #ef4444 0%, #f59e42 100%)'
+                  : passwordStrength(password) === 2
+                    ? '#f59e42'
+                  : passwordStrength(password) === 3
+                    ? 'linear-gradient(90deg, #f59e42 0%, #00b686 100%)'
+                  : '#00b686',
+                transition: 'width 0.2s',
+              }} />
+            </div>
+            {/* Disable Next button until all criteria are met and passwords match */}
           </div>
         )}
         {mode === "signup" && activeStep === 2 && (
@@ -447,15 +722,23 @@ const AuthPage = () => {
               type="text"
               value={otp}
               onChange={e => setOtp(e.target.value)}
+              onFocus={() => setFocusedField("otp")}
+              onBlur={() => setFocusedField("")}
               style={{
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "0.5rem",
                 border: "1px solid var(--color-dark)",
-                background: "var(--color-dark)",
-                color: "var(--text-light)",
+                background:
+                  focusedField === "otp"
+                    ? "#DDDDDD"
+                    : otp
+                    ? "silver"
+                    : "#b0b8b4",
+                color: "#333333",
                 fontSize: "1rem",
                 outline: "none",
+                boxShadow: "0 0 8px 0 var(--shadow-glow)",
               }}
               autoComplete="one-time-code"
             />
@@ -494,9 +777,23 @@ const AuthPage = () => {
               border: "none",
               cursor: "pointer",
               transition: "background 0.2s",
+              opacity:
+                (mode === 'signup' && activeStep === 0 && (error || !name || !email || !country || !rawPhone)) ||
+                (mode === 'signup' && activeStep === 1 && (!password || !confirmPassword || password !== confirmPassword || passwordStrength(password) < 4))
+                  ? 0.5
+                  : 1,
+              pointerEvents:
+                (mode === 'signup' && activeStep === 0 && (error || !name || !email || !country || !rawPhone)) ||
+                (mode === 'signup' && activeStep === 1 && (!password || !confirmPassword || password !== confirmPassword || passwordStrength(password) < 4))
+                  ? 'none'
+                  : 'auto',
             }}
             onMouseOver={e => (e.currentTarget.style.background = "#009e76")}
             onMouseOut={e => (e.currentTarget.style.background = "var(--color-green)")}
+            disabled={
+              (mode === 'signup' && activeStep === 0 && (error || !name || !email || !country || !rawPhone)) ||
+              (mode === 'signup' && activeStep === 1 && (!password || !confirmPassword || password !== confirmPassword || passwordStrength(password) < 4))
+            }
           >
             {activeStep === steps.length - 1 ? (mode === "login" ? "Sign In" : "Sign Up") : "Next"}
           </button>
