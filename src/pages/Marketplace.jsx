@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ShoppingCart, Plus } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const SpotlightCard = ({ children, className = "", style = {} }) => {
   const divRef = useRef(null);
@@ -59,7 +60,8 @@ const SpotlightCard = ({ children, className = "", style = {} }) => {
   );
 };
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product, onAddToCart, cart, onQuantityChange }) => {
+  const cartItem = cart.find(item => item.id === product.id);
   return (
     <SpotlightCard style={{ height: "100%" }}>
       <div style={{ display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
@@ -86,36 +88,71 @@ const ProductCard = ({ product, onAddToCart }) => {
             ${product.price}
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button
-            onClick={() => onAddToCart(product)}
-            style={{
-              backgroundColor: "#2563eb",
-              color: "white",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.5rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              border: "none",
-              cursor: "pointer",
-              transition: "background-color 0.2s"
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#1d4ed8"}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
-          >
-            <Plus size={16} />
-            Add to Cart
-          </button>
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8 }}>
+          {cartItem && cartItem.quantity > 0 ? (
+            <input
+              type="number"
+              min={0}
+              value={cartItem.quantity}
+              onChange={e => onQuantityChange(product, Number(e.target.value))}
+              style={{
+                width: 64,
+                borderRadius: 8,
+                border: 'none',
+                padding: '0.5rem 1rem',
+                textAlign: 'center',
+                fontWeight: 700,
+                background: '#2563eb',
+                color: '#fff',
+                fontSize: '1rem',
+                height: 40,
+                outline: 'none',
+                boxShadow: '0 0 0 2px #2563eb22',
+                transition: 'box-shadow 0.2s',
+              }}
+            />
+          ) : (
+            <button
+              onClick={() => onAddToCart(product)}
+              style={{
+                backgroundColor: "#2563eb",
+                color: "white",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.5rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                border: "none",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+                height: 40,
+                fontWeight: 700,
+                fontSize: '1rem',
+              }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#1d4ed8"}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+            >
+              <Plus size={16} />
+              Add to Cart
+            </button>
+          )}
         </div>
       </div>
     </SpotlightCard>
   );
 };
 
+const getCartFromCookie = () => {
+  const cart = Cookies.get('cart');
+  return cart ? JSON.parse(cart) : [];
+};
+const setCartToCookie = (cart) => {
+  Cookies.set('cart', JSON.stringify(cart), { expires: 7 });
+};
+
 const MarketplacePage = () => {
-  const [cart, setCart] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
+  const [cart, setCart] = useState(getCartFromCookie());
+  const [cartCount, setCartCount] = useState(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
 
   const products = [{
       id: 1,
@@ -204,8 +241,37 @@ const MarketplacePage = () => {
   ];
 
   const handleAddToCart = (product) => {
-    setCart(prev => [...prev, product]);
-    setCartCount(prev => prev + 1);
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      let newCart;
+      if (existing) {
+        newCart = prev.map(item => item.id === product.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item);
+      } else {
+        newCart = [...prev, { ...product, quantity: 1 }];
+      }
+      setCartToCookie(newCart);
+      setCartCount(newCart.reduce((acc, item) => acc + (item.quantity || 1), 0));
+      return newCart;
+    });
+  };
+
+  const handleQuantityChange = (product, quantity) => {
+    setCart(prev => {
+      let newCart;
+      if (quantity <= 0) {
+        newCart = prev.filter(item => item.id !== product.id);
+      } else {
+        const exists = prev.find(item => item.id === product.id);
+        if (exists) {
+          newCart = prev.map(item => item.id === product.id ? { ...item, quantity } : item);
+        } else {
+          newCart = [...prev, { ...product, quantity }];
+        }
+      }
+      setCartToCookie(newCart);
+      setCartCount(newCart.reduce((acc, item) => acc + (item.quantity || 1), 0));
+      return newCart;
+    });
   };
 
   return (
@@ -277,7 +343,7 @@ const MarketplacePage = () => {
           }}
         >
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
+            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} cart={cart} onQuantityChange={handleQuantityChange} />
           ))}
         </div>
       </div>

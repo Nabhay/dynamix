@@ -8,6 +8,7 @@ import Marketplace from './pages/Marketplace';
 import Auth from './pages/Auth';
 import FAQ from './pages/FAQ';
 import Testimonials from './pages/Testimonials';
+import Checkout from './pages/Checkout';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -49,6 +50,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/testimonials" element={<Testimonials />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </div>
     </div>
