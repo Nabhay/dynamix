@@ -8,32 +8,32 @@ export default function FAQ() {
   const autoScrollInterval = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  const faqData = [
-    {
-      question: "Lorem ipsum dolor sit amet consectetur?",
-      answer: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris."
-    },
-    {
-      question: "Consectetur adipiscing elit sed do eiusmod?",
-      answer: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-    },
-    {
-      question: "Tempor incididunt ut labore et dolore?",
-      answer: "Ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor."
-    },
-    {
-      question: "Magna aliqua ut enim ad minim veniam?",
-      answer: "Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat."
-    },
-    {
-      question: "Nostrud exercitation ullamco laboris nisi?",
-      answer: "Ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat."
-    },
-    {
-      question: "Aliquip ex ea commodo consequat duis?",
-      answer: "Aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia."
-    }
-  ];
+const faqData = [
+  {
+    question: "What is Neuratrench and what do you do?",
+    answer: "Neuratrench is a pioneering deep-tech company utilizing Synaptium-based energy systems to revolutionize deep-sea resource access. We develop ultra-efficient subaqueous platforms powered by Synaptiums to extract rare minerals and materials from the ocean floor sustainably and at unprecedented depths."
+  },
+  {
+    question: "What are Synaptiums and how do they work?",
+    answer: "Synaptiums are newly discovered compounds from the Mid-Atlantic Ridge that enable high-density, self-regenerating energy systems. These compounds allow for compact, ultra-stable power sources that operate efficiently in the extreme pressure and isolation of the deep-sea environment—unlocking energy independence for submersible and stationary marine operations."
+  },
+  {
+    question: "How does Neuratrench extract deep-sea resources?",
+    answer: "Our proprietary Synaptium-powered drones and trenching bots operate autonomously, navigating ultra-deep marine environments to excavate and extract polymetallic nodules, rare earth elements, and deep-crust minerals. Our adaptive AI systems ensure precision targeting, minimal seabed disruption, and automated sample validation."
+  },
+  {
+    question: "How do you ensure environmental safety and sustainability?",
+    answer: "Environmental stewardship is central to our mission. Neuratrench utilizes AI-driven monitoring, low-impact harvesting tools, and closed-loop filtration systems to reduce ecological disturbance. We also collaborate with marine biologists and environmental regulators to ensure our operations align with global sustainability frameworks."
+  },
+  {
+    question: "What is Neuratrench’s business model?",
+    answer: "We operate on a hybrid B2B and licensing model. We partner with governments, aerospace manufacturers, tech firms, and energy providers who require high-purity rare elements. Our logistics arm, TrenchPort, handles extraction-to-port delivery, while our Licensing Program enables partners to deploy Synaptium-powered tech under strict operational guidelines."
+  },
+  {
+    question: "How do you scale commercialization and logistics?",
+    answer: "Commercialization is scaled through our modular Synaptium PowerCores, which enable plug-and-play deployment across fleets. We operate under international trade frameworks and have developed floating logistics hubs (TrenchPorts) near economic zones, ensuring efficient material routing. Strategic partnerships with maritime trade networks ensure secure delivery to refineries and clients worldwide."
+  }
+];
 
   // Stepper scroll logic
   useEffect(() => {
