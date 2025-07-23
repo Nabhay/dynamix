@@ -112,7 +112,7 @@ function HomePage() {
             }}
           >
         <ModelViewer
-          url="src/assets/dynamix submarine.glb"
+          url="src/assets/dynamix12754.glb"
           width={550}
           height={550}
         />
