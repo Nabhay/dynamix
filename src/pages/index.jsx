@@ -17,19 +17,19 @@ function HomePage() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+      minHeight: '100vh', 
         width: '100vw',
-        background: `
-          radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
-          radial-gradient(circle at 85% 15%, rgba(25, 59, 112, 0.7) 0%, transparent 45%),
-          radial-gradient(circle at 45% 60%, rgba(0, 140, 140, 0.4) 0%, transparent 35%),
-          radial-gradient(circle at 70% 80%, rgba(25, 59, 112, 0.5) 0%, transparent 30%),
-          linear-gradient(135deg, rgba(0, 140, 140, 0.2) 0%, rgba(25, 59, 112, 0.3) 50%, rgba(26, 35, 50, 1) 100%)
-        `,
-        display: 'flex',
-        alignItems: 'center',
+      background: `
+        radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 85% 15%, rgba(25, 59, 112, 0.7) 0%, transparent 45%),
+        radial-gradient(circle at 45% 60%, rgba(0, 140, 140, 0.4) 0%, transparent 35%),
+        radial-gradient(circle at 70% 80%, rgba(25, 59, 112, 0.5) 0%, transparent 30%),
+        linear-gradient(135deg, rgba(0, 140, 140, 0.2) 0%, rgba(25, 59, 112, 0.3) 50%, rgba(26, 35, 50, 1) 100%)
+      `,
+      display: 'flex',
+      alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
+      overflow: 'hidden',
         overscrollBehavior: 'none',
       }}
     >
@@ -82,8 +82,8 @@ function HomePage() {
               textAlign: 'left',
             }}
           >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor Lorem.
-          </p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor Lorem.
+        </p>
           <Link
             to="/auth"
             style={{
@@ -100,7 +100,7 @@ function HomePage() {
           >
             Sign Up
           </Link>
-        </div>
+      </div>
         {!isMobile && (
           <div
             style={{
@@ -111,11 +111,11 @@ function HomePage() {
               minWidth: 0,
             }}
           >
-            <ModelViewer
-              url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
-              width={550}
-              height={550}
-            />
+        <ModelViewer
+          url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
+          width={550}
+          height={550}
+        />
           </div>
         )}
       </div>

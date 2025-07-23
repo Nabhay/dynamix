@@ -10,41 +10,43 @@ const MOBILE_BREAKPOINT = 768;
 const cardData = [
   {
     color: "#0a1a2f",
-    title: "AI Insights",
-    description: "Unlock trends and predictions with real-time AI analytics.",
-    label: "Intelligence",
-  },
-  {
-    color: "#0a1a2f",
-    title: "Unified Dashboard",
-    description: "All your data, projects, and teams in one beautiful view.",
-    label: "Control",
-  },
-  {
-    color: "#0a1a2f",
     title: "Collaboration",
-    description: "Seamless teamwork with chat, tasks, and shared docs.",
+    description: "From geologists to systems engineers, keep everyone aligned with mission threads, annotated 3D models, and task-sync across oceanic time zones.",
     label: "Connect",
   },
   {
     color: "#0a1a2f",
     title: "Automation Studio",
-    description: "Automate workflows and let NeuroTrench handle the busywork.",
+    description: "Design auto-pilot drilling protocols, energy redistribution scripts, and mineral extraction routines—powered by the NeuroTrench Automation Core.",
     label: "Automate",
   },
   {
     color: "#0a1a2f",
-    title: "Integrations",
-    description: "Plug into your favorite tools and services instantly.",
-    label: "Ecosystem",
+    title: "Resource Mapping",
+    image: "./src/assets/resource.png",
+    description: "Pinpoint cobalt, rare earths, and methane hydrates with Synaptium-boosted geo-imaging—maximize extraction, minimize disturbance.",
+    label: "Resources",
   },
   {
     color: "#0a1a2f",
-    title: "Zero Trust Security",
-    description: "Enterprise-grade protection for your data and users.",
-    label: "Secure",
+    title: "AI-Driven Ops",
+    description: "Deploy ML agents to orchestrate complex extraction workflows—reduce downtime, adapt to dynamic trench conditions, and self-optimize.",
+    label: "AI Ops",
   },
+  {
+    color: "#0a1a2f",
+    title: "Cost Advantage",
+    description: "Leverage Synaptium’s ultra-efficiency to undercut legacy players—deliver rare resources to market faster, cleaner, and cheaper.",
+    label: "Competitive",
+  },
+  {
+    color: "#0a1a2f",
+    title: "Reliability Engine",
+    description: "Triple-redundant systems, fault-tolerant comms, and AI repair daemons ensure continuous uptime—even in the abyss.",
+    label: "Reliable",
+  }
 ];
+
 
 const createParticleElement = (
   x,
