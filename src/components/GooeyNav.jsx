@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./GooeyNav.css";
 import logo from '../assets/logo.svg';
 
@@ -13,11 +13,15 @@ const GooeyNav = ({
   colors = [1, 2, 3, 1, 2, 3, 1, 4],
   initialActiveIndex = 0,
 }) => {
+  const location = useLocation();
   const containerRef = useRef(null);
   const navRef = useRef(null);
   const filterRef = useRef(null);
   const textRef = useRef(null);
-  const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const idx = items.findIndex(item => item.href === location.pathname);
+    return idx !== -1 ? idx : initialActiveIndex;
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -173,6 +177,12 @@ const GooeyNav = ({
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, [activeIndex]);
+
+  // Update activeIndex on route change
+  useEffect(() => {
+    const idx = items.findIndex(item => item.href === location.pathname);
+    if (idx !== -1) setActiveIndex(idx);
+  }, [location.pathname, items]);
 
   return (
     <div className="gooey-nav-container" ref={containerRef}>
