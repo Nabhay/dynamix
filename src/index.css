@@ -2,8 +2,10 @@
 :root {
   --color-primary: #004C4C;
   --color-dark: #0B0D11;
-  --color-mid: #383A3C;
+  --color-mid: #043e3f3c;
   --color-accent: #193B70;
+  --color-green: #00b686;
+  --shadow-green: 0 0 20px rgba(0, 182, 134, 0.25);
   --text-light: #f1f1f1;
   --text-muted: #9fa3a9;
   --radius-lg: 24px;
@@ -23,8 +25,6 @@ html, body {
   color: var(--text-light);
   min-height: 100vh;
   scroll-behavior: smooth;
-  overflow: hidden;
-  overscroll-behavior: none;
 }
 
 a {
@@ -34,4 +34,22 @@ a {
 
 ul {
   list-style: none;
+}
+
+.main-scroll-content {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  scroll-padding-top: 96px;
+}
+
+/* Optional: Modern custom scrollbar */
+.main-scroll-content::-webkit-scrollbar {
+  width: 12px;
+}
+.main-scroll-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 140, 140, 0.25);
+  border-radius: 8px;
+}
+.main-scroll-content::-webkit-scrollbar-track {
+  background: transparent;
 }
