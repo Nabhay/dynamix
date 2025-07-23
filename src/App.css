@@ -1,0 +1,42 @@
+/* src/App.css */
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-dark);
+  color: var(--text-light);
+}
+
+.nav-wrapper {
+  height: 600px;
+  position: relative;
+}
+
+.page-content {
+  flex: 1;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-heading {
+  font-size: 3rem;
+  color: var(--color-accent);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+}
+
+.model-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
