@@ -19,6 +19,14 @@ const GooeyNav = ({
   const textRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 900);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const noise = (n = 1) => n / 2 - Math.random() * n;
 
@@ -162,24 +170,61 @@ const GooeyNav = ({
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img src={logo} alt="Logo" style={{ height: 48, width: 48 }} />
         </Link>
-        <button
-          className="hamburger"
-          aria-label="Toggle menu"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span className="bar" />
-          <span className="bar" />
-          <span className="bar" />
-        </button>
+        {!isMobile && (
+          <ul ref={navRef}>
+            {items.filter(item => !['Sign up / Sign In'].includes(item.label)).map((item, index) => (
+              <li
+                key={index}
+                className={activeIndex === index ? 'active' : ''}
+              >
+                <Link
+                  to={item.href}
+                  onClick={(e) => handleClick(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  tabIndex={0}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', zIndex: 100 }}>
+          {!isMobile && (
+            <Link to="/auth" style={{ 
+              textDecoration: 'none', 
+              color: '#ffffff', 
+              padding: '0.75rem 1.5rem', 
+              borderRadius: '8px', 
+              background: '#008080', 
+              fontWeight: 500, 
+              fontSize: '1rem',
+              fontFamily: '"Inter", sans-serif'
+            }}>Sign Up</Link>
+          )}
+          {isMobile && (
+            <button
+              className="hamburger"
+              aria-label="Toggle menu"
+              onClick={e => { e.stopPropagation(); setMenuOpen(open => !open); }}
+              style={{ marginLeft: '1rem', zIndex: 101 }}
+              type="button"
+            >
+              <span className="bar" />
+              <span className="bar" />
+              <span className="bar" />
+            </button>
+          )}
+        </div>
         <ul
-          ref={navRef}
-          className={menuOpen ? 'open' : ''}
-          onClick={() => setMenuOpen(false)}
+          className="mobile-dropdown"
+          data-open={menuOpen ? "true" : "false"}
         >
           {items.filter(item => !['Sign up / Sign In'].includes(item.label)).map((item, index) => (
             <li
               key={index}
               className={activeIndex === index ? 'active' : ''}
+              onClick={() => setMenuOpen(false)}
             >
               <Link
                 to={item.href}
@@ -192,18 +237,6 @@ const GooeyNav = ({
             </li>
           ))}
         </ul>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <Link to="/auth" style={{ 
-            textDecoration: 'none', 
-            color: '#ffffff', 
-            padding: '0.75rem 1.5rem', 
-            borderRadius: '8px', 
-            background: '#008080', 
-            fontWeight: 500, 
-            fontSize: '1rem',
-            fontFamily: '"Inter", sans-serif'
-          }}>Sign Up</Link>
-        </div>
       </nav>
       <span className="effect filter" ref={filterRef} />
       <span className="effect text" ref={textRef} />

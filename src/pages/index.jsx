@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ModelViewer from '../components/ModelViewer';
 import './Home.css';
 
 function HomePage() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 900);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div
       style={{
@@ -88,21 +96,23 @@ function HomePage() {
             Sign Up
           </Link>
         </div>
-        <div
-          style={{
-            flex: 1.2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: 0,
-          }}
-        >
-          <ModelViewer
-            url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
-            width={550}
-            height={550}
-          />
-        </div>
+        {!isMobile && (
+          <div
+            style={{
+              flex: 1.2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: 0,
+            }}
+          >
+            <ModelViewer
+              url="https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/ToyCar/glTF-Binary/ToyCar.glb"
+              width={550}
+              height={550}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
