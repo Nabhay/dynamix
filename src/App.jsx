@@ -7,7 +7,6 @@ import Contact from './pages/Contact';
 import Marketplace from './pages/Marketplace';
 import Auth from './pages/Auth';
 import FAQ from './pages/FAQ';
-import Testimonials from './pages/Testimonials';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 
@@ -50,7 +49,6 @@ function App() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/testimonials" element={<Testimonials />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
