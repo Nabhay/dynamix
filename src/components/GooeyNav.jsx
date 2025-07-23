@@ -22,7 +22,7 @@ const GooeyNav = ({
   const textRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(() => {
     const idx = items.findIndex(item => item.href === location.pathname);
-    return idx !== -1 ? idx : initialActiveIndex;
+    return idx !== -1 ? idx : -1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -203,7 +203,7 @@ const GooeyNav = ({
   // Update activeIndex on route change
   useEffect(() => {
     const idx = items.findIndex(item => item.href === location.pathname);
-    if (idx !== -1) setActiveIndex(idx);
+    setActiveIndex(idx !== -1 ? idx : -1);
   }, [location.pathname, items]);
 
   return (

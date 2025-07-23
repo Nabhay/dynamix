@@ -29,7 +29,7 @@ export default function About() {
           margin: '7rem 0 2.5rem 0',
           fontFamily: 'Poppins, sans-serif',
           letterSpacing: '-1px',
-          textAlign: 'center',
+    textAlign: 'center',
           textShadow: '0 2px 24px #193b70',
         }}
       >

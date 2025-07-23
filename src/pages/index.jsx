@@ -5,10 +5,12 @@ import './Home.css';
 
 function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
+  const [fadeIn, setFadeIn] = useState(false);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 900);
     checkMobile();
     window.addEventListener('resize', checkMobile);
+    setTimeout(() => setFadeIn(true), 50);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -40,6 +42,9 @@ function HomePage() {
           gap: '4rem',
           maxWidth: '1200px',
           width: '100%',
+          opacity: fadeIn ? 1 : 0,
+          transform: fadeIn ? 'translateY(0)' : 'translateY(32px)',
+          transition: 'opacity 1.1s cubic-bezier(.4,0,.2,1), transform 1.1s cubic-bezier(.4,0,.2,1)',
         }}
       >
         <div
@@ -64,7 +69,7 @@ function HomePage() {
               textAlign: 'left',
             }}
           >
-            Lorem Ipsum Dolar
+            NeuroTrench
           </h1>
           <p
             style={{
