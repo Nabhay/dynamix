@@ -30,6 +30,7 @@ const cardData = [
   {
     color: "#0a1a2f",
     title: "AI-Driven Ops",
+    image: "./src/assets/ship.png",
     description: "Deploy ML agents to orchestrate complex extraction workflows—reduce downtime, adapt to dynamic trench conditions, and self-optimize.",
     label: "AI Ops",
   },
