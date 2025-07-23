@@ -85,7 +85,7 @@ function HomePage() {
             NeuraTrench is a pioneering deep-sea technology company that harnesses the revolutionary Synaptium-based energy systems discovered at the Mid-Atlantic Ridge. 
         </p>
           <Link
-            to="/auth"
+            to="/faq"
             style={{
               fontFamily: '"Inter", sans-serif',
               display: 'inline-block',
@@ -98,7 +98,7 @@ function HomePage() {
               fontSize: '1rem',
             }}
           >
-            Sign Up
+            FAQ
           </Link>
       </div>
         {!isMobile && (
