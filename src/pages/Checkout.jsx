@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
+import { set, get } from 'idb-keyval';
 
 // Card issuer detection
 function getCardIssuer(number) {
@@ -124,6 +125,32 @@ const Checkout = () => {
 
   const cart = cartState;
 
+  const ORDERS_KEY = 'orders';
+
+  const handlePlaceOrder = async () => {
+    // Generate order object
+    const now = new Date();
+    const order = {
+      id: Date.now(),
+      orderNumber: Math.floor(Math.random() * 1e12).toString().padStart(12, '0'),
+      placedDate: now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+      deliveredDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long' }),
+      returnClosedDate: new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+      total: cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0),
+      shippingName: shipping.name,
+      shipping,
+      items: cart.map(item => ({ ...item, price: item.price })), // ensure price is stored
+      status: 'Order Confirmed',
+    };
+    // Save to IndexedDB (TODO: sync with backend later)
+    const prevOrders = (await get(ORDERS_KEY)) || [];
+    await set(ORDERS_KEY, [order, ...prevOrders]);
+    // Clear cart
+    Cookies.set('cart', JSON.stringify([]), { expires: 7 });
+    // Navigate to orders page
+    navigate('/orders');
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, sans-serif' }}>
       <div style={{ background: 'var(--color-mid, #1e293b)', padding: '2.5rem 2rem', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.18)', minWidth: 340, color: '#fff', maxWidth: 420, width: '100%' }}>
@@ -143,7 +170,7 @@ const Checkout = () => {
                         min={0}
                         value={item.quantity || 1}
                         onChange={e => handleQuantityChange(item, Number(e.target.value))}
-                        style={{
+      style={{
                           width: 52,
                           marginRight: 8,
                           borderRadius: '0.5rem',
@@ -325,12 +352,12 @@ const Checkout = () => {
             <h3 style={{ fontSize: 20, marginBottom: 12 }}>Confirm Order</h3>
             <div style={{ marginBottom: 12 }}>Please review your order and details before confirming.</div>
             <div style={{ marginBottom: 8 }}><strong>Cart:</strong> {cart.map(item => `${item.name} x${item.quantity || 1}`).join(', ')}</div>
-            <div style={{ marginBottom: 8 }}><strong>Shipping:</strong> {shipping.name}, {shipping.address}, {shipping.city}, {shipping.zip}</div>
+            <div style={{ marginBottom: 8 }}><strong>Shipping:</strong> {shipping.name}, {shipping.address}, {shipping.city}, {shipping.zip}, {shipping.country}</div>
             <div style={{ marginBottom: 8 }}><strong>Card:</strong> **** **** **** {cardDetails.number.slice(-4)}</div>
             <div style={{ marginTop: 16, fontWeight: 600, fontSize: 18 }}>
               Total: ${cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0).toFixed(2)}
             </div>
-            <button style={{ marginTop: 18, width: '100%', padding: 12, borderRadius: 8, background: '#2563eb', color: '#fff', fontWeight: 700, fontSize: 18, border: 'none', cursor: 'pointer' }} onClick={() => alert('Order placed!')}>Place Order</button>
+            <button style={{ marginTop: 18, width: '100%', padding: 12, borderRadius: 8, background: '#2563eb', color: '#fff', fontWeight: 700, fontSize: 18, border: 'none', cursor: 'pointer' }} onClick={handlePlaceOrder}>Place Order</button>
           </div>
         )}
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: 16 }}>

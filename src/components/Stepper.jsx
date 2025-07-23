@@ -21,9 +21,12 @@ const Stepper = ({ steps = [], activeStep = 0, onStepChange }) => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "2rem",
+        gap: "1rem",
         marginBottom: "2.5rem",
         fontFamily: 'Inter, sans-serif',
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
       }}>
         {steps.map((label, idx) => (
           <React.Fragment key={label}>
@@ -33,7 +36,8 @@ const Stepper = ({ steps = [], activeStep = 0, onStepChange }) => {
               alignItems: "center",
               cursor: idx <= activeStep ? "pointer" : "default",
               opacity: idx <= activeStep ? 1 : 0.5,
-              minWidth: STEP_WIDTH,
+              flex: 1,
+              minWidth: 0,
             }}
             onClick={() => idx <= activeStep && onStepChange && onStepChange(idx)}
             >

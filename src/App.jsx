@@ -10,6 +10,7 @@ import FAQ from './pages/FAQ';
 import Testimonials from './pages/Testimonials';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
+import Orders from './pages/Orders';
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -53,6 +54,7 @@ function App() {
           <Route path="/testimonials" element={<Testimonials />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<Orders />} />
         </Routes>
       </div>
     </div>

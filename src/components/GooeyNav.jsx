@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./GooeyNav.css";
 import logo from '../assets/logo.svg';
+import { User } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const GooeyNav = ({
   items,
@@ -25,6 +27,26 @@ const GooeyNav = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Listen for login events and cookie changes
+  useEffect(() => {
+    const checkLogin = () => {
+      const email = Cookies.get('email');
+      const password = Cookies.get('password');
+      setIsLoggedIn(!!email && !!password);
+    };
+    checkLogin();
+    // Listen for custom login event
+    window.addEventListener('user-logged-in', checkLogin);
+    // Listen for storage changes (in case of multi-tab)
+    window.addEventListener('storage', checkLogin);
+    return () => {
+      window.removeEventListener('user-logged-in', checkLogin);
+      window.removeEventListener('storage', checkLogin);
+    };
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 900);
@@ -213,16 +235,101 @@ const GooeyNav = ({
             )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', zIndex: 100 }}>
               {!isMobile && (
-                <Link to="/auth" style={{ 
-                  textDecoration: 'none', 
-                  color: '#ffffff', 
-                  padding: '0.75rem 1.5rem', 
-                  borderRadius: '8px', 
-                  background: '#008080', 
-                  fontWeight: 500, 
-                  fontSize: '1rem',
-                  fontFamily: '"Inter", sans-serif'
-                }}>Sign Up</Link>
+                isLoggedIn ? (
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        padding: '0.5rem',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 24,
+                        transition: 'background 0.2s',
+                      }}
+                      onClick={() => setUserMenuOpen(open => !open)}
+                      onBlur={() => setTimeout(() => setUserMenuOpen(false), 150)}
+                      aria-label="User menu"
+                      tabIndex={0}
+                    >
+                      <User size={28} />
+                    </button>
+                    {userMenuOpen && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          top: '110%',
+                          background: 'var(--color-mid)',
+                          borderRadius: 12,
+                          boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+                          minWidth: 140,
+                          zIndex: 200,
+                          padding: '0.5rem 0',
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}
+                        onMouseDown={e => e.preventDefault()}
+                      >
+                        <Link
+                          to="/profile"
+                          style={{
+                            color: '#fff',
+                            padding: '0.75rem 1.5rem',
+                            textDecoration: 'none',
+                            fontWeight: 500,
+                            fontSize: '1rem',
+                            fontFamily: '"Inter", sans-serif',
+                            border: 'none',
+                            background: 'none',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            borderRadius: 8,
+                            transition: 'background 0.2s',
+                          }}
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          to="/orders"
+                          style={{
+                            color: '#fff',
+                            padding: '0.75rem 1.5rem',
+                            textDecoration: 'none',
+                            fontWeight: 500,
+                            fontSize: '1rem',
+                            fontFamily: '"Inter", sans-serif',
+                            border: 'none',
+                            background: 'none',
+                            textAlign: 'left',
+                            cursor: 'pointer',
+                            borderRadius: 8,
+                            transition: 'background 0.2s',
+                          }}
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          Orders
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link to="/auth" style={{ 
+                    textDecoration: 'none', 
+                    color: '#ffffff', 
+                    padding: '0.75rem 1.5rem', 
+                    borderRadius: '8px', 
+                    background: '#008080', 
+                    fontWeight: 500, 
+                    fontSize: '1rem',
+                    fontFamily: '"Inter", sans-serif'
+                  }}>Sign Up</Link>
+                )
               )}
               {isMobile && (
                 <button
@@ -287,16 +394,101 @@ const GooeyNav = ({
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', zIndex: 100 }}>
             {!isMobile && (
-              <Link to="/auth" style={{ 
-                textDecoration: 'none', 
-                color: '#ffffff', 
-                padding: '0.75rem 1.5rem', 
-                borderRadius: '8px', 
-                background: '#008080', 
-                fontWeight: 500, 
-                fontSize: '1rem',
-                fontFamily: '"Inter", sans-serif'
-              }}>Sign Up</Link>
+              isLoggedIn ? (
+                <div style={{ position: 'relative' }}>
+                  <button
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      padding: '0.5rem',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 24,
+                      transition: 'background 0.2s',
+                    }}
+                    onClick={() => setUserMenuOpen(open => !open)}
+                    onBlur={() => setTimeout(() => setUserMenuOpen(false), 150)}
+                    aria-label="User menu"
+                    tabIndex={0}
+                  >
+                    <User size={28} />
+                  </button>
+                  {userMenuOpen && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: '110%',
+                        background: 'var(--color-mid)',
+                        borderRadius: 12,
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+                        minWidth: 140,
+                        zIndex: 200,
+                        padding: '0.5rem 0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                      onMouseDown={e => e.preventDefault()}
+                    >
+                      <Link
+                        to="/profile"
+                        style={{
+                          color: '#fff',
+                          padding: '0.75rem 1.5rem',
+                          textDecoration: 'none',
+                          fontWeight: 500,
+                          fontSize: '1rem',
+                          fontFamily: '"Inter", sans-serif',
+                          border: 'none',
+                          background: 'none',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          borderRadius: 8,
+                          transition: 'background 0.2s',
+                        }}
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        to="/orders"
+                        style={{
+                          color: '#fff',
+                          padding: '0.75rem 1.5rem',
+                          textDecoration: 'none',
+                          fontWeight: 500,
+                          fontSize: '1rem',
+                          fontFamily: '"Inter", sans-serif',
+                          border: 'none',
+                          background: 'none',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          borderRadius: 8,
+                          transition: 'background 0.2s',
+                        }}
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Orders
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link to="/auth" style={{ 
+                  textDecoration: 'none', 
+                  color: '#ffffff', 
+                  padding: '0.75rem 1.5rem', 
+                  borderRadius: '8px', 
+                  background: '#008080', 
+                  fontWeight: 500, 
+                  fontSize: '1rem',
+                  fontFamily: '"Inter", sans-serif'
+                }}>Sign Up</Link>
+              )
             )}
             {isMobile && (
               <button
