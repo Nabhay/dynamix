@@ -82,7 +82,7 @@ function HomePage() {
               textAlign: 'left',
             }}
           >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor Lorem.
+            NeuraTrench is a pioneering deep-sea technology company that harnesses the revolutionary Synaptium-based energy systems discovered at the Mid-Atlantic Ridge. 
         </p>
           <Link
             to="/auth"
