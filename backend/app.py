@@ -169,33 +169,6 @@ def update_profile():
     conn.close()
     return jsonify(profile)
 
-# Send OTP to email (simulate)
-@app.route('/api/otp/send', methods=['POST'])
-def send_otp():
-    data = request.json
-    email = data.get('email')
-    otp = str(random.randint(100000, 999999))
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('INSERT OR REPLACE INTO otps (email, otp, created_at) VALUES (?, ?, ?)', (email, otp, int(uuid.uuid1().time)))
-    conn.commit()
-    conn.close()
-    send_otp_email(email, otp)
-    return jsonify({'message': f'OTP sent to {email}'})
-
-# Resend OTP (simulate)
-@app.route('/api/otp/resend', methods=['POST'])
-def resend_otp():
-    data = request.json
-    email = data.get('email')
-    otp = str(random.randint(100000, 999999))
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('INSERT OR REPLACE INTO otps (email, otp, created_at) VALUES (?, ?, ?)', (email, otp, int(uuid.uuid1().time)))
-    conn.commit()
-    conn.close()
-    send_otp_email(email, otp)
-    return jsonify({'message': f'OTP resent to {email}'})
 
 if __name__ == '__main__':
     app.run(debug=True) 
