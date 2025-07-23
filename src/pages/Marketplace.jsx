@@ -212,9 +212,7 @@ const MarketplacePage = () => {
     <div
       style={{
         minHeight: "100vh",
-        height: "100vh",
-        overflowY: "auto",
-        padding: "8rem 4rem 8rem", // Top, right/left, and bottom padding
+        padding: "96px 4rem 4rem", // Add 96px top padding for navbar spacing
         background: `
           radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
           radial-gradient(circle at 85% 15%, rgba(25, 59, 112, 0.7) 0%, transparent 45%),

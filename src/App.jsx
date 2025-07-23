@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import GooeyNav from './components/GooeyNav';
 import Home from './pages';
 import About from './pages/About';
-import Services from './pages/Services';
 import Contact from './pages/Contact';
 import Marketplace from './pages/Marketplace';
 import Auth from './pages/Auth';
@@ -12,10 +11,9 @@ import Testimonials from './pages/Testimonials';
 
 const navItems = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Services', href: '/services' },
-  { label: 'Contact', href: '/contact' },
   { label: 'Marketplace', href: '/marketplace' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 function App() {
@@ -46,7 +44,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/auth" element={<Auth />} />
