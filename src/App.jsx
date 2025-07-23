@@ -8,7 +8,11 @@ import Marketplace from './pages/Marketplace';
 import Auth from './pages/Auth';
 import FAQ from './pages/FAQ';
 import Testimonials from './pages/Testimonials';
+<<<<<<< HEAD
 import Checkout from './pages/Checkout';
+=======
+import Profile from './pages/Profile';
+>>>>>>> b7815423cf9dc08058f6fb288c6d2f1869b077a5
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -50,7 +54,11 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/testimonials" element={<Testimonials />} />
+<<<<<<< HEAD
           <Route path="/checkout" element={<Checkout />} />
+=======
+          <Route path="/profile" element={<Profile />} />
+>>>>>>> b7815423cf9dc08058f6fb288c6d2f1869b077a5
         </Routes>
       </div>
     </div>
