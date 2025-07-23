@@ -18,6 +18,7 @@ const GooeyNav = ({
   const filterRef = useRef(null);
   const textRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const noise = (n = 1) => n / 2 - Math.random() * n;
 
@@ -161,7 +162,20 @@ const GooeyNav = ({
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img src={logo} alt="Logo" style={{ height: 48, width: 48 }} />
         </Link>
-        <ul ref={navRef}>
+        <button
+          className="hamburger"
+          aria-label="Toggle menu"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+        </button>
+        <ul
+          ref={navRef}
+          className={menuOpen ? 'open' : ''}
+          onClick={() => setMenuOpen(false)}
+        >
           {items.filter(item => !['Sign up / Sign In'].includes(item.label)).map((item, index) => (
             <li
               key={index}
@@ -179,14 +193,6 @@ const GooeyNav = ({
           ))}
         </ul>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-          <Link to="/login" style={{ 
-            textDecoration: 'none', 
-            color: '#ffffff', 
-            padding: '0.5rem 0', 
-            fontWeight: 400, 
-            fontSize: '1rem',
-            fontFamily: '"Inter", sans-serif'
-          }}>Log in</Link>
           <Link to="/auth" style={{ 
             textDecoration: 'none', 
             color: '#ffffff', 
