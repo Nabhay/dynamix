@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AnimatedList from '../components/AnimatedList';
 
 export default function FAQ() {
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [expandedIndex, setExpandedIndex] = useState(0);
+  const faqListRef = useRef(null);
+  const isScrolling = useRef(false);
+  const autoScrollInterval = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const faqData = [
     {
@@ -28,86 +32,132 @@ export default function FAQ() {
     {
       question: "Aliquip ex ea commodo consequat duis?",
       answer: "Aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia."
-    },
-    {
-      question: "Irure dolor in reprehenderit in voluptate?",
-      answer: "Velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum."
-    },
-    {
-      question: "Esse cillum dolore eu fugiat nulla?",
-      answer: "Pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum sed ut perspiciatis unde omnis iste natus."
-    },
-    {
-      question: "Excepteur sint occaecat cupidatat non?",
-      answer: "Proident sunt in culpa qui officia deserunt mollit anim id est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
-    },
-    {
-      question: "Sunt in culpa qui officia deserunt?",
-      answer: "Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo."
     }
   ];
 
-  const handleQuestionSelect = (item, index) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
+  // Stepper scroll logic
+  useEffect(() => {
+    const list = faqListRef.current;
+    if (!list) return;
+    let lastTouchY = null;
+    const handleWheel = (e) => {
+      e.preventDefault();
+      if (isScrolling.current) return;
+      isScrolling.current = true;
+      setTimeout(() => { isScrolling.current = false; }, 350);
+      if (e.deltaY > 0) {
+        setExpandedIndex(idx => Math.min(idx + 1, faqData.length - 1));
+      } else if (e.deltaY < 0) {
+        setExpandedIndex(idx => Math.max(idx - 1, 0));
+      }
+    };
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 1) {
+        lastTouchY = e.touches[0].clientY;
+      }
+    };
+    const handleTouchMove = (e) => {
+      if (lastTouchY === null) return;
+      const currentY = e.touches[0].clientY;
+      const diff = lastTouchY - currentY;
+      if (Math.abs(diff) > 30 && !isScrolling.current) {
+        isScrolling.current = true;
+        setTimeout(() => { isScrolling.current = false; }, 350);
+        if (diff > 0) {
+          setExpandedIndex(idx => Math.min(idx + 1, faqData.length - 1));
+        } else if (diff < 0) {
+          setExpandedIndex(idx => Math.max(idx - 1, 0));
+        }
+        lastTouchY = currentY;
+      }
+    };
+    const handleTouchEnd = () => {
+      lastTouchY = null;
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowDown') {
+        setExpandedIndex(idx => Math.min(idx + 1, faqData.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        setExpandedIndex(idx => Math.max(idx - 1, 0));
+      }
+    };
+    list.addEventListener('wheel', handleWheel, { passive: false });
+    list.addEventListener('touchstart', handleTouchStart, { passive: false });
+    list.addEventListener('touchmove', handleTouchMove, { passive: false });
+    list.addEventListener('touchend', handleTouchEnd, { passive: false });
+    list.addEventListener('keydown', handleKeyDown);
+    list.tabIndex = 0;
+    list.style.outline = 'none';
+    return () => {
+      list.removeEventListener('wheel', handleWheel);
+      list.removeEventListener('touchstart', handleTouchStart);
+      list.removeEventListener('touchmove', handleTouchMove);
+      list.removeEventListener('touchend', handleTouchEnd);
+      list.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [faqData.length]);
+
+  // Auto-advance when not hovered
+  useEffect(() => {
+    if (!isHovered) {
+      autoScrollInterval.current = setInterval(() => {
+        setExpandedIndex(idx => {
+          if (idx < faqData.length - 1) {
+            return idx + 1;
+          } else {
+            return 0;
+          }
+        });
+      }, 2000);
+    } else {
+      clearInterval(autoScrollInterval.current);
+    }
+    return () => clearInterval(autoScrollInterval.current);
+  }, [isHovered, faqData.length]);
 
   const faqItems = faqData.map((item, index) => (
-    <div key={index}>
+    <div key={index} style={{ 
+      marginBottom: '1.2rem',
+      transition: 'all 0.6s cubic-bezier(.4,0,.2,1)',
+      opacity: expandedIndex === index ? 1 : 0.6,
+      transform: expandedIndex === index ? 'scale(1.04)' : 'scale(0.98)',
+      pointerEvents: expandedIndex === index ? 'auto' : 'none',
+    }}>
       <div style={{
-        padding: '0.5rem 0.8rem',
-        background: 'linear-gradient(135deg, rgba(0, 140, 140, 0.2) 0%, rgba(25, 59, 112, 0.15) 100%)',
+        padding: '1.2rem 1.5rem',
+        background: 'rgba(20, 40, 60, 0.7)',
         borderRadius: '24px',
-        border: '1px solid rgba(0, 140, 140, 0.3)',
-        cursor: 'pointer',
-        marginBottom: expandedIndex === index ? '0' : '0.3rem',
-        backdropFilter: 'blur(20px)',
-        transition: 'all 0.3s ease',
-        boxShadow: '0 8px 32px rgba(0, 140, 140, 0.15)',
+        border: expandedIndex === index ? '2px solid #00b3b3' : '1px solid rgba(0, 140, 140, 0.25)',
+        boxShadow: expandedIndex === index ? '0 8px 32px 4px rgba(0,200,200,0.18)' : '0 4px 16px rgba(0,140,140,0.10)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backdropFilter: 'blur(16px)',
+        color: '#fff',
+        fontFamily: '"Inter", sans-serif',
+        fontWeight: 500,
+        fontSize: '1.1rem',
+        letterSpacing: '0.01em',
+        zIndex: expandedIndex === index ? 2 : 1,
+        transition: 'all 0.6s cubic-bezier(.4,0,.2,1)'
       }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(135deg, rgba(0, 140, 140, 0.3) 0%, rgba(25, 59, 112, 0.2) 100%)',
-          opacity: expandedIndex === index ? 1 : 0,
-          transition: 'opacity 0.3s ease'
-        }} />
-        <h3 style={{
-          color: '#ffffff',
-          fontSize: '0.75rem',
-          fontWeight: 500,
-          margin: 0,
-          fontFamily: '"Inter", sans-serif',
-          position: 'relative',
-          zIndex: 1
-        }}>
-          {item.question}
-        </h3>
+        {item.question}
       </div>
       {expandedIndex === index && (
         <div style={{
-          padding: '0.8rem',
-          background: 'linear-gradient(135deg, rgba(0, 140, 140, 0.25) 0%, rgba(0, 140, 140, 0.15) 100%)',
+          padding: '1.1rem 1.5rem 1.2rem 1.5rem',
+          background: 'rgba(0, 140, 140, 0.18)',
           borderRadius: '0 0 24px 24px',
-          border: '1px solid rgba(0, 140, 140, 0.4)',
-          borderTop: 'none',
-          marginBottom: '0.3rem',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 8px 32px rgba(0, 140, 140, 0.2)'
+          border: '1px solid rgba(0, 140, 140, 0.18)',
+          marginTop: '-0.2rem',
+          marginBottom: '0.2rem',
+          boxShadow: '0 2px 12px rgba(0,140,140,0.10)',
+          color: 'rgba(255,255,255,0.92)',
+          fontSize: '1rem',
+          lineHeight: '1.5',
+          fontFamily: '"Inter", sans-serif',
+          transition: 'all 0.6s cubic-bezier(.4,0,.2,1)'
         }}>
-          <p style={{
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '0.75rem',
-            lineHeight: '1.4',
-            margin: 0,
-            fontFamily: '"Inter", sans-serif'
-          }}>
-            {item.answer}
-          </p>
+          {item.answer}
         </div>
       )}
     </div>
@@ -115,7 +165,7 @@ export default function FAQ() {
 
   return (
     <div style={{ 
-      height: '100vh', 
+      minHeight: '100vh', 
       padding: '8rem 4rem 8rem', 
       background: `
         radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
@@ -124,9 +174,7 @@ export default function FAQ() {
       `,
       display: 'flex',
       gap: '4rem',
-      alignItems: 'flex-start',
-      overflow: 'hidden',
-      overscrollBehavior: 'none'
+      alignItems: 'flex-start'
     }}>
       <div style={{ 
         flex: '1',
@@ -152,21 +200,23 @@ export default function FAQ() {
           Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation.
         </p>
       </div>
-      
       <div style={{ 
         flex: '1',
         maxWidth: '600px',
-        height: '100%',
-        overflow: 'hidden'
+        height: 'auto',
+        overflow: 'visible',
+        outline: 'none',
       }}>
-        <AnimatedList
-          items={faqItems}
-          onItemSelect={handleQuestionSelect}
-          showGradients={false}
-          enableArrowNavigation={false}
-          displayScrollbar={false}
-          initialSelectedIndex={-1}
-        />
+        <div
+          id="faq-list"
+          ref={faqListRef}
+          tabIndex={0}
+          style={{ outline: 'none' }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {faqItems}
+        </div>
       </div>
     </div>
   );

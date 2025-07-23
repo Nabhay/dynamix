@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import './AnimatedList.css';
 
-const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => {
+const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick, enlarged }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { amount: 0.5, triggerOnce: false });
   return (
@@ -12,9 +12,9 @@ const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => 
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       initial={{ scale: 0.7, opacity: 0 }}
-      animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.7, opacity: 0 }}
+      animate={inView ? { scale: enlarged ? 1.15 : 1, opacity: 1, zIndex: enlarged ? 2 : 1, boxShadow: enlarged ? '0 8px 32px 4px rgba(0,140,140,0.25)' : '0 8px 32px rgba(0,140,140,0.15)' } : { scale: 0.7, opacity: 0 }}
       transition={{ duration: 0.2, delay }}
-      style={{ marginBottom: '1rem', cursor: 'pointer' }}
+      style={{ marginBottom: '1rem', cursor: 'pointer', zIndex: enlarged ? 2 : 1 }}
     >
       {children}
     </motion.div>
@@ -40,6 +40,27 @@ const AnimatedList = ({
   const [keyboardNav, setKeyboardNav] = useState(false);
   const [topGradientOpacity, setTopGradientOpacity] = useState(0);
   const [bottomGradientOpacity, setBottomGradientOpacity] = useState(1);
+  const [centeredIndex, setCenteredIndex] = useState(0);
+
+  // Use window scroll for sequential enlargement
+  useEffect(() => {
+    const handleWindowScroll = () => {
+      if (listRef.current) {
+        const listRect = listRef.current.getBoundingClientRect();
+        const itemHeight = listRef.current.children[0]?.getBoundingClientRect().height || 1;
+        const scrollY = window.scrollY || window.pageYOffset;
+        const listTop = listRect.top + scrollY;
+        const viewportTop = scrollY;
+        const offset = viewportTop - listTop;
+        let idx = Math.round(offset / itemHeight);
+        idx = Math.max(0, Math.min(items.length - 1, idx));
+        setCenteredIndex(idx);
+      }
+    };
+    window.addEventListener('scroll', handleWindowScroll, { passive: true });
+    handleWindowScroll();
+    return () => window.removeEventListener('scroll', handleWindowScroll);
+  }, [items]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -103,6 +124,7 @@ const AnimatedList = ({
         ref={listRef}
         className={`scroll-list ${!displayScrollbar ? 'no-scrollbar' : ''}`}
         onScroll={handleScroll}
+        style={{ position: 'relative' }}
       >
         {items.map((item, index) => (
           <AnimatedItem
@@ -116,6 +138,7 @@ const AnimatedList = ({
                 onItemSelect(item, index);
               }
             }}
+            enlarged={centeredIndex === index}
           >
             <div className={`item ${selectedIndex === index ? 'selected' : ''} ${itemClassName}`}>
               <p className="item-text">{item}</p>
