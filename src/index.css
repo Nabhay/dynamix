@@ -2,8 +2,10 @@
 :root {
   --color-primary: #004C4C;
   --color-dark: #0B0D11;
-  --color-mid: #383A3C;
+  --color-mid: #043e3f3c;
   --color-accent: #193B70;
+  --color-green: #00b686;
+  --shadow-green: 0 0 20px rgba(0, 182, 134, 0.25);
   --text-light: #f1f1f1;
   --text-muted: #9fa3a9;
   --radius-lg: 24px;
