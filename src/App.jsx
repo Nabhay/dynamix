@@ -42,7 +42,7 @@ function App() {
           colors={[1, 2, 3, 1, 2, 3, 1, 4]}
         />
       </div>
-      <div style={{ paddingTop: '96px' }}>
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

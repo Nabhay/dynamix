@@ -53,3 +53,8 @@ ul {
 .main-scroll-content::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.overflow-content-none {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
