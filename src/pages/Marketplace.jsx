@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ShoppingCart, Plus } from 'lucide-react';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -43,6 +43,7 @@ const SpotlightCard = ({ children, className = "", style = {} }) => {
         border: "1px solid #1e293b",
         background: "linear-gradient(to right, #0f172a, #1e293b)",
         padding: "1.5rem",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
         ...style
       }}
     >
@@ -61,10 +62,32 @@ const SpotlightCard = ({ children, className = "", style = {} }) => {
   );
 };
 
-const ProductCard = ({ product, onAddToCart, cart, onQuantityChange }) => {
+const ProductCard = ({ product, onAddToCart, cart, onQuantityChange, index }) => {
   const cartItem = cart.find(item => item.id === product.id);
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setFadeIn(true), index * 100);
+  }, [index]);
+
   return (
-    <SpotlightCard style={{ height: "100%" }}>
+    <SpotlightCard 
+      style={{ 
+        height: "100%",
+        opacity: fadeIn ? 1 : 0,
+        transform: fadeIn ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+        transition: 'opacity 0.6s ease, transform 0.6s ease',
+        animationDelay: `${index * 0.1}s`
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
+        e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
+    >
       <div style={{ display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
         <div style={{ marginBottom: "1rem" }}>
           <img
@@ -75,6 +98,13 @@ const ProductCard = ({ product, onAddToCart, cart, onQuantityChange }) => {
               height: "12rem",
               objectFit: "cover",
               borderRadius: "0.5rem",
+              transition: "transform 0.3s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
             }}
           />
         </div>
@@ -109,7 +139,19 @@ const ProductCard = ({ product, onAddToCart, cart, onQuantityChange }) => {
                 height: 40,
                 outline: 'none',
                 boxShadow: '0 0 0 2px #2563eb22',
-                transition: 'box-shadow 0.2s',
+                transition: 'box-shadow 0.2s, transform 0.1s ease',
+              }}
+              onFocus={(e) => {
+                e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.3)';
+              }}
+              onBlur={(e) => {
+                e.target.style.boxShadow = '0 0 0 2px #2563eb22';
+              }}
+              onMouseDown={(e) => {
+                e.target.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.target.style.transform = 'scale(1)';
               }}
             />
           ) : (
@@ -125,13 +167,27 @@ const ProductCard = ({ product, onAddToCart, cart, onQuantityChange }) => {
                 gap: "0.5rem",
                 border: "none",
                 cursor: "pointer",
-                transition: "background-color 0.2s",
+                transition: "background-color 0.2s, transform 0.1s ease, box-shadow 0.2s ease",
                 height: 40,
                 fontWeight: 700,
                 fontSize: '1rem',
               }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#1d4ed8"}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#2563eb"}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "#1d4ed8";
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "#2563eb";
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(0.95)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px) scale(1)';
+              }}
             >
               <Plus size={16} />
               Add to Cart
@@ -154,7 +210,12 @@ const setCartToCookie = (cart) => {
 const MarketplacePage = () => {
   const [cart, setCart] = useState(getCartFromCookie());
   const [cartCount, setCartCount] = useState(cart.reduce((acc, item) => acc + (item.quantity || 1), 0));
+  const [fadeIn, setFadeIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
 
   const products = [
     {
@@ -281,7 +342,7 @@ const MarketplacePage = () => {
     <div
       style={{
         minHeight: "100vh",
-        padding: "96px 4rem 4rem", // Add 96px top padding for navbar spacing
+        padding: "96px 4rem 4rem",
         background: `
           radial-gradient(circle at 15% 85%, rgba(0, 140, 140, 0.6) 0%, transparent 40%),
           radial-gradient(circle at 85% 15%, rgba(25, 59, 112, 0.7) 0%, transparent 45%),
@@ -295,12 +356,17 @@ const MarketplacePage = () => {
       }}
     >
       <div style={{ maxWidth: "80rem", margin: "0 auto" }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2rem"
-        }}>
+        <div 
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "2rem",
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? 'translateY(0)' : 'translateY(30px)',
+            transition: 'opacity 0.8s ease, transform 0.8s ease'
+          }}
+        >
           <div>
             <h1 style={{
               fontFamily: '"Poppins", sans-serif',
@@ -327,10 +393,25 @@ const MarketplacePage = () => {
                 alignItems: "center",
                 gap: "0.5rem",
                 border: "none",
-                cursor: "pointer"
+                cursor: "pointer",
+                transition: "background-color 0.2s, transform 0.2s ease, box-shadow 0.2s ease"
               }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#334155"}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#1e293b"}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "#334155";
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "#1e293b";
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px) scale(1)';
+              }}
               onClick={() => navigate('/checkout')}
             >
               <ShoppingCart size={20} />
@@ -346,8 +427,15 @@ const MarketplacePage = () => {
             gap: "1.5rem"
           }}
         >
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} cart={cart} onQuantityChange={handleQuantityChange} />
+          {products.map((product, index) => (
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              onAddToCart={handleAddToCart} 
+              cart={cart} 
+              onQuantityChange={handleQuantityChange}
+              index={index}
+            />
           ))}
         </div>
       </div>

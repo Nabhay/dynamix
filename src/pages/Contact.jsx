@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChromaGrid from '../components/ChromaGrid';
 import chromaGridDemo from '../components/ChromaGrid.jsx'; 
 
@@ -47,19 +47,18 @@ const demoContacts = [
 
 export default function Contact() {
   const [selectedContact, setSelectedContact] = useState(null);
+  const [fadeIn, setFadeIn] = useState(false);
 
-  // Custom ChromaGrid with click handler
+  useEffect(() => {
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
+
   const CustomChromaGrid = () => (
     <ChromaGrid
       items={demoContacts}
       onCardClick={contact => setSelectedContact(contact)}
-      // Pass through all other props as needed
     />
   );
-
-  // Patch ChromaGrid to support onCardClick
-  // (If not supported, we can patch it here)
-  // We'll override the default ChromaGrid rendering for this page
 
   return (
     <div
@@ -82,8 +81,17 @@ export default function Contact() {
     >
 
       {!selectedContact ? (
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '3.5rem' }}>
-          {/* Custom grid with click handler */}
+        <div 
+          style={{ 
+            width: '100%', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            marginBottom: '3.5rem',
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? 'translateY(0)' : 'translateY(30px)',
+            transition: 'opacity 0.8s ease, transform 0.8s ease'
+          }}
+        >
           <div className="chroma-grid" style={{ width: '100%' }}>
             {demoContacts.map((c, i) => (
               <article
@@ -95,8 +103,21 @@ export default function Contact() {
                   border: `1.5px solid ${c.borderColor}`,
                   background: 'transparent',
                   margin: '0.5rem',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  animationDelay: `${i * 0.1}s`,
+                  opacity: fadeIn ? 1 : 0,
+                  transform: fadeIn ? 'scale(1)' : 'scale(0.9)',
+                  animation: fadeIn ? `fadeInUp 0.6s ease ${i * 0.1}s both` : 'none'
                 }}
                 onClick={() => setSelectedContact(c)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 <div className="chroma-img-wrapper">
                   <img src={c.image} alt={c.title} loading="lazy" />
@@ -126,6 +147,10 @@ export default function Contact() {
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem',
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? 'translateY(0)' : 'translateY(30px)',
+            transition: 'opacity 0.6s ease, transform 0.6s ease',
+            animation: fadeIn ? 'slideInUp 0.6s ease' : 'none'
           }}
           onSubmit={e => { e.preventDefault(); alert('Message sent!'); }}
         >
@@ -142,6 +167,15 @@ export default function Contact() {
               fontSize: '1rem',
               cursor: 'pointer',
               padding: 0,
+              transition: 'color 0.3s ease, transform 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#00a0a0';
+              e.currentTarget.style.transform = 'translateX(-5px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#008080';
+              e.currentTarget.style.transform = 'translateX(0)';
             }}
           >
             ← Back to Team
@@ -177,6 +211,15 @@ export default function Contact() {
               fontFamily: 'Inter, sans-serif',
               outline: 'none',
               marginBottom: 0,
+              transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#00a0a0';
+              e.target.style.boxShadow = '0 0 0 3px rgba(0, 160, 160, 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#008080';
+              e.target.style.boxShadow = 'none';
             }}
           />
           <input
@@ -194,6 +237,15 @@ export default function Contact() {
               fontFamily: 'Inter, sans-serif',
               outline: 'none',
               marginBottom: 0,
+              transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#00a0a0';
+              e.target.style.boxShadow = '0 0 0 3px rgba(0, 160, 160, 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#008080';
+              e.target.style.boxShadow = 'none';
             }}
           />
           <textarea
@@ -212,6 +264,15 @@ export default function Contact() {
               outline: 'none',
               resize: 'vertical',
               marginBottom: 0,
+              transition: 'border-color 0.3s ease, box-shadow 0.3s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#00a0a0';
+              e.target.style.boxShadow = '0 0 0 3px rgba(0, 160, 160, 0.2)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#008080';
+              e.target.style.boxShadow = 'none';
             }}
           />
           <button
@@ -228,13 +289,51 @@ export default function Contact() {
               marginTop: '0.5rem',
               fontFamily: 'Inter, sans-serif',
               boxShadow: '0 2px 12px 0 rgba(0,140,140,0.10)',
-              transition: 'background 0.2s',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 20px 0 rgba(0,140,140,0.20)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 12px 0 rgba(0,140,140,0.10)';
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(0.98)';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px) scale(1)';
             }}
           >
             Send Message
           </button>
         </form>
       )}
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

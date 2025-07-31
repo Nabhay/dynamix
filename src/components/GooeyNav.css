@@ -365,3 +365,12 @@
     padding: 0.6em 0;
   }
 }
+
+/* Signup button animation */
+.gooey-nav-container nav a[href="/auth"] {
+  transition: transform 0.1s ease;
+}
+
+.gooey-nav-container nav a[href="/auth"]:active {
+  transform: scale(0.95);
+}
