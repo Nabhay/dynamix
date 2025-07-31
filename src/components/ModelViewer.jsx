@@ -445,13 +445,7 @@ const ModelViewer = ({
         <directionalLight position={[5, 0, 0]} intensity={1.5} />
         <directionalLight position={[-5, 0, 0]} intensity={1.5} />
 
-        <ContactShadows
-          ref={contactRef}
-          position={[0, -0.5, 0]}
-          opacity={0.35}
-          scale={10}
-          blur={2}
-        />
+
 
         <Suspense fallback={<Loader placeholderSrc={placeholderSrc} />}>
           <ModelInner
