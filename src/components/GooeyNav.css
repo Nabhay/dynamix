@@ -76,9 +76,14 @@
   border-radius: 100vw;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
   box-shadow: 0 0 0.5px 1.5px transparent;
   color: var(--color-primary);
+  text-shadow: none;
+}
+
+.gooey-nav-container nav ul li:active {
+  transform: scale(0.95);
 }
 
 .gooey-nav-container nav ul li a {
@@ -88,6 +93,23 @@
   color: #ffffff;
   font-family: "Inter", sans-serif;
   transition: color 0.3s ease;
+}
+
+.gooey-nav-container nav ul li:hover {
+  background-color: #ffffff;
+  animation: hapticFeedback 0.3s ease;
+  cursor: none;
+}
+
+@keyframes hapticFeedback {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.gooey-nav-container nav ul li:hover a {
+  color: #000000;
+  cursor: none;
 }
 
 .gooey-nav-container nav ul li.active a {
