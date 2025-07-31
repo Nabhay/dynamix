@@ -20,7 +20,6 @@ import {
   useFBX,
   useProgress,
   Html,
-  Environment,
   ContactShadows,
 } from "@react-three/drei";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
@@ -171,8 +170,7 @@ const ModelInner = ({
       }, 16);
       return () => clearInterval(id);
     } else onLoaded?.();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content]);
+  }, [content, fadeIn, onLoaded, pivot, initPitch, initYaw, camera, autoFrame]);
 
   useEffect(() => {
     if (!enableManualRotation || isTouch) return;
@@ -298,8 +296,7 @@ const ModelInner = ({
       window.removeEventListener("pointerup", up);
       window.removeEventListener("pointercancel", up);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gl, enableManualRotation, enableManualZoom, minZoom, maxZoom]);
+  }, [gl, enableManualRotation, enableManualZoom, minZoom, maxZoom, camera]);
 
   useEffect(() => {
     if (isTouch) return;
@@ -373,34 +370,34 @@ const ModelViewer = ({
   height = 400,
   modelXOffset = 0,
   modelYOffset = 0,
-  defaultRotationX = -50,
-  defaultRotationY = 20,
-  defaultZoom = 0.5,
-  minZoomDistance = 0.5,
-  maxZoomDistance = 10,
+  defaultRotationX = -100,
+  defaultRotationY = 0,
+  defaultZoom = 3.0,
+  minZoomDistance = 2.0,
+  maxZoomDistance = 5,
   enableMouseParallax = true,
   enableManualRotation = true,
   enableHoverRotation = true,
   enableManualZoom = true,
-  ambientIntensity = 0.3,
-  keyLightIntensity = 1,
-  fillLightIntensity = 0.5,
-  rimLightIntensity = 0.8,
-  environmentPreset = "forest",
+    ambientIntensity = 1.2,
+  keyLightIntensity = 3.0,
+  fillLightIntensity = 2.0,
+  rimLightIntensity = 2.5,
   autoFrame = false,
   placeholderSrc,
-showScreenshotButton = false,
   fadeIn = false,
   autoRotate = false,
   autoRotateSpeed = 0.35,
   onModelLoaded,
 }) => {
-  useEffect(() => void useGLTF.preload(url), [url]);
+  useEffect(() => {
+    if (url) {
+      useGLTF.preload(url);
+    }
+  }, [url]);
+  
   const pivot = useRef(new THREE.Vector3()).current;
   const contactRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
 
   const initYaw = deg2rad(defaultRotationX);
   const initPitch = deg2rad(defaultRotationY);
@@ -408,32 +405,6 @@ showScreenshotButton = false,
     Math.max(defaultZoom, minZoomDistance),
     maxZoomDistance
   );
-
-  const capture = () => {
-    const g = rendererRef.current,
-      s = sceneRef.current,
-      c = cameraRef.current;
-    if (!g || !s || !c) return;
-    g.shadowMap.enabled = false;
-    const tmp = [];
-    s.traverse((o) => {
-      if (o.isLight && "castShadow" in o) {
-        tmp.push({ l: o, cast: o.castShadow });
-        o.castShadow = false;
-      }
-    });
-    if (contactRef.current) contactRef.current.visible = false;
-    g.render(s, c);
-    const urlPNG = g.domElement.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.download = "model.png";
-    a.href = urlPNG;
-    a.click();
-    g.shadowMap.enabled = true;
-    tmp.forEach(({ l, cast }) => (l.castShadow = cast));
-    if (contactRef.current) contactRef.current.visible = true;
-    invalidate();
-  };
 
   return (
     <div
@@ -444,25 +415,18 @@ showScreenshotButton = false,
         position: "relative",
       }}
     >
-      {/* ...existing code... */}
-
       <Canvas
         shadows
         frameloop="demand"
         gl={{ preserveDrawingBuffer: true }}
-        onCreated={({ gl, scene, camera }) => {
-          rendererRef.current = gl;
-          sceneRef.current = scene;
-          cameraRef.current = camera;
+        onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.outputColorSpace = THREE.SRGBColorSpace;
         }}
         camera={{ fov: 50, position: [0, 0, camZ], near: 0.01, far: 100 }}
         style={{ touchAction: "pan-y pinch-zoom" }}
       >
-        {environmentPreset !== "none" && (
-          <Environment preset={environmentPreset} background={false} />
-        )}
+
 
         <ambientLight intensity={ambientIntensity} />
         <directionalLight
@@ -475,6 +439,11 @@ showScreenshotButton = false,
           intensity={fillLightIntensity}
         />
         <directionalLight position={[0, 4, -5]} intensity={rimLightIntensity} />
+        <directionalLight position={[0, -5, 0]} intensity={1.5} />
+        <directionalLight position={[0, 0, 5]} intensity={1.5} />
+        <directionalLight position={[0, 0, -5]} intensity={1.5} />
+        <directionalLight position={[5, 0, 0]} intensity={1.5} />
+        <directionalLight position={[-5, 0, 0]} intensity={1.5} />
 
         <ContactShadows
           ref={contactRef}

@@ -109,12 +109,13 @@ function HomePage() {
               alignItems: 'center',
               justifyContent: 'center',
               minWidth: 0,
+              position: 'relative',
             }}
           >
         <ModelViewer
           url="src/assets/dynamix12754.glb"
-          width={550}
-          height={550}
+          width={700}
+          height={700}
         />
           </div>
         )}
